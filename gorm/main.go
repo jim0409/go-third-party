@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -24,17 +23,12 @@ type OperationDatabase struct {
 }
 
 type OPDB interface {
-	create(name string, email string) error
-	queryWithName(name string) (string, error)
-	updateEmail(name string, email string) error
-	deleteData(name string, email string) error
+	dtMethod
 	Closed() error
-	debug()
-	transaction() error
+	Debug()
 }
 
 func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
-	// connection :=
 	db, err := gorm.Open(dbc.DBType, dbc.DBUri)
 	if err != nil {
 		return nil, err
@@ -43,7 +37,20 @@ func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
 	return &OperationDatabase{DB: db}, err
 }
 
-func NewDBConfiguration(user string, password string, dbtype string, dbname string, dbport string, dbaddress string) *DBConfig {
+func (db *OperationDatabase) Closed() error {
+	if err := db.DB.Close(); err != nil {
+		return fmt.Errorf("Error happended while closing db : %v\n", err)
+	}
+	log.Fatalln("Going to close DB")
+	return nil
+}
+
+// 透過使用Debug()可以轉譯語言為SQL語法
+func (db *OperationDatabase) Debug() {
+	db.DB = db.DB.Debug()
+}
+
+func NewDBConfiguration(user, password string, dbtype string, dbname, dbport string, dbaddress string) *DBConfig {
 	return &DBConfig{
 		User:      user,
 		Password:  password,
@@ -56,18 +63,23 @@ func NewDBConfiguration(user string, password string, dbtype string, dbname stri
 }
 
 func main() {
-	fmt.Println("Go ORM Tutorial")
-	if len(os.Args) != 6 {
-		fmt.Fprintf(os.Stderr, "Usage: %s <msyql-addr> <mysql-port> <mysql-operation-database> <mysql-user> <mysql-user-password>\n",
-			os.Args[0])
-		os.Exit(1)
-	}
+	// if len(os.Args) != 6 {
+	// 	fmt.Fprintf(os.Stderr, "Usage: %s <msyql-addr> <mysql-port> <mysql-operation-database> <mysql-user> <mysql-user-password>\n",
+	// 		os.Args[0])
+	// 	os.Exit(1)
+	// }
 
-	mysqlAddr := os.Args[1]  // 127.0.0.1
-	mysqlPort := os.Args[2]  // 3306
-	mysqlOpDB := os.Args[3]  // mysql
-	mysqlUsr := os.Args[4]   // root
-	mysqUsrPwd := os.Args[5] // secret
+	// mysqlAddr := os.Args[1]  // 127.0.0.1
+	// mysqlPort := os.Args[2]  // 3306
+	// mysqlOpDB := os.Args[3]  // mysql
+	// mysqlUsr := os.Args[4]   // root
+	// mysqUsrPwd := os.Args[5] // secret
+
+	mysqlAddr := "127.0.0.1"
+	mysqlPort := "3306"
+	mysqlOpDB := "mysql"
+	mysqlUsr := "root"
+	mysqUsrPwd := "secret"
 
 	newDB := NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
 	db, err := newDB.NewDBConnection()

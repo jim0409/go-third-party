@@ -1,12 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"gorm.io/gorm"
 )
+
+type dtMethod interface {
+	create(name string, email string) error
+	queryWithName(name string) (string, error)
+	updateEmail(name string, email string) error
+	deleteData(name string, email string) error
+	transaction() error
+	cleanAll() error
+}
 
 // Our DemoTable Struct
 type DemoTable struct {
@@ -46,19 +54,6 @@ func (db *OperationDatabase) transaction() error {
 	return tx.Commit().Error
 
 	return nil
-}
-
-func (db *OperationDatabase) Closed() error {
-	if err := db.DB.Close(); err != nil {
-		return fmt.Errorf("Error happended while closing db : %v\n", err)
-	}
-	log.Fatalln("Going to close DB")
-	return nil
-}
-
-// 透過使用Debug()可以轉譯語言為SQL語法
-func (db *OperationDatabase) debug() {
-	db.DB = db.DB.Debug()
 }
 
 // 實做CRUD
