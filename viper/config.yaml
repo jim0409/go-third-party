@@ -1,0 +1,16 @@
+service:
+  service:
+    name: service_name
+    port: 8888
+  log:
+    level: info
+  mysql:
+    host: 1.2.3.4
+    port: 4444
+    user: mysql_user
+    passwd: mysql_password
+    max_conn: 1000
+    database:
+      table1: table1 
+      table2: table2
+      table3: table3

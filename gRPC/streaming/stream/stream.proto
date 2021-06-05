@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package friday;
+
+// 請求使用者資訊
+message UserInfoRequest {
+    int64 uid = 1; // 使用者ID
+}
+
+// 請求使用者資訊的結果
+message UserInfoResponse {
+    string name     = 1; // 使用者姓名
+    uint32 age      = 2; // 使用者年齡
+    uint32 sex      = 3; // 使用者性別
+    uint32 count    = 4; // 賬戶餘額
+}
+
+service Data {
+    //簡單Rpc
+    // 獲取使用者資料
+    rpc GetUserInfo(UserInfoRequest) returns (UserInfoResponse){}
+
+    //  修改使用者 雙向流模式
+    rpc ChangeUserInfo(stream UserInfoResponse) returns (stream UserInfoResponse){}
+
+}

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package practice;
+
+// The greeting service definition.
+service Health {
+  // Sends a greeting
+  rpc CheckHealth (CheckHealthRequest) returns (CheckHealthReply) {}
+}
+
+// PersonInfo to include person detail for BMI
+message PersonInfo {
+  string name = 1;
+  string sexual = 2;
+  int32 hight = 3;
+  int32 weight = 4;
+}
+
+// The request message containing the user's name.
+message CheckHealthRequest {
+  PersonInfo personinfo = 1;
+}
+
+// ReportInfo to include health report detail for persons
+message ReportInfo{
+  string name = 1;
+  string message = 2;
+  int32 bMI = 3;
+  bool IsHealth =4;
+}
+
+// The response message containing the greetings
+message CheckHealthReply {
+  ReportInfo reportinfo = 1;
+}

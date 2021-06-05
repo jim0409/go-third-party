@@ -1,0 +1,33 @@
+version: "3"
+
+networks:
+  proxy-net:
+    driver: bridge
+
+services:
+  reverseproxy:
+    # container_name: nginx  # to enable a loadbalance can not use fix container name
+    networks:
+      - proxy-net
+    container_name: reverse_proxy
+    image: nginx:1.13.7
+    ports:
+      - "80:80"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+  
+  api:
+    networks:
+      - proxy-net
+    restart: always
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+  
+  grpc:
+    networks:
+      - proxy-net
+    container_name: grpc_server
+    build:
+      context: .
+      dockerfile: grpc.Dockerfile

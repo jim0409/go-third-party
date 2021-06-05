@@ -1,0 +1,25 @@
+version: "3"  
+
+services:  
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+     - 9090:9090
+    volumes:
+     - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+
+  grafana:
+    # image: grafana/grafana:6.0.1
+    image: grafana/grafana
+    user: "0"
+    environment:
+      GF_LOG_LEVEL: error
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+    volumes:
+      - ./config/grafana:/etc/grafana
+      - ./config/dashboards:/tmp/dashboards
+    ports:
+      - "3000:3000"
+    restart: on-failure
