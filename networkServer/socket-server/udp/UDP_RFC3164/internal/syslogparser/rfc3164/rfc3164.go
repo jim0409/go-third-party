@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/jimweng/networkServer/socket-server/udp/UDP_RFC3164/internal/syslogparser"
+	"go-third-party/networkServer/socket-server/udp/UDP_RFC3164/internal/syslogparser"
 )
 
 type Parser struct {

@@ -41,6 +41,7 @@ require (
 	github.com/rs/zerolog v1.22.0
 	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	github.com/sirupsen/logrus v1.8.1
+	github.com/smartystreets/goconvey v1.6.4
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.7.0
 	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125
@@ -53,6 +54,7 @@ require (
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
 	google.golang.org/grpc v1.38.0
 	gopkg.in/bufio.v1 v1.0.0-20140618132640-567b2bfa514e // indirect
+	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/redis.v2 v2.3.2
 	gorm.io/gorm v1.21.10

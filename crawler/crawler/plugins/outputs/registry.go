@@ -1,6 +1,6 @@
 package outputs
 
-import "github.com/jimweng/crawler/crawler/utils"
+import "go-third-party/crawler/crawler/utils"
 
 type Creator func() utils.Output
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/jimweng/networkServer/socket-server/udp/UDP_customer_protocol/server/router"
-	_ "github.com/jimweng/networkServer/socket-server/udp/UDP_customer_protocol/server/router/handler/all"
+	"go-third-party/networkServer/socket-server/udp/UDP_customer_protocol/server/router"
+	_ "go-third-party/networkServer/socket-server/udp/UDP_customer_protocol/server/router/handler/all"
 )
 
 func main() {

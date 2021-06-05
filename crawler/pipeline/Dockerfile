@@ -7,7 +7,7 @@ RUN set -eux; \
 
 # env for go workdir and mod vendor
 ENV GOPATH /go/
-ENV GO_WORKDIR $GOPATH/src/github.com/jimweng/crawler/pipeline
+ENV GO_WORKDIR $GOPATH/src/go-third-party/crawler/pipeline
 ENV GO111MODULE=on
 # claim workdir and move to workdir loc
 WORKDIR $GO_WORKDIR
@@ -21,8 +21,8 @@ RUN cd server;go build -o server -i main.go
 
 FROM alpine:3.8
 # copy binary into container
-COPY --from=builder /go/src/github.com/jimweng/crawler/pipeline/client/client .
-COPY --from=builder /go/src/github.com/jimweng/crawler/pipeline/server/server .
+COPY --from=builder /go/src/go-third-party/crawler/pipeline/client/client .
+COPY --from=builder /go/src/go-third-party/crawler/pipeline/server/server .
 ADD ./entrypoint.sh .
 RUN chmod +x entrypoint.sh
 

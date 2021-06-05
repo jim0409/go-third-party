@@ -1,4 +1,4 @@
-module github.com/jimweng/crawler/crawler
+module go-third-party/crawler/crawler
 
 go 1.12
 

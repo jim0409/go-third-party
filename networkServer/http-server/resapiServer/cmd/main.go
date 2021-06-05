@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jimweng/networkServer/http-server/resapiServer/behavior/sayhi"
+	"go-third-party/networkServer/http-server/resapiServer/behavior/sayhi"
 )
 
 // Descriptions of Operation steps:

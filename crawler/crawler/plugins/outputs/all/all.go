@@ -1,5 +1,5 @@
 package all
 
 import (
-	_ "github.com/jimweng/crawler/crawler/plugins/outputs/mysql"
+	_ "go-third-party/crawler/crawler/plugins/outputs/mysql"
 )

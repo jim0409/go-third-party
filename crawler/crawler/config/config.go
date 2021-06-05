@@ -5,10 +5,11 @@ import (
 	"log"
 	"os"
 
+	"go-third-party/crawler/crawler/plugins/inputs/crawler"
+	"go-third-party/crawler/crawler/plugins/outputs/mysql"
+	"go-third-party/crawler/crawler/utils"
+
 	"github.com/BurntSushi/toml"
-	"github.com/jimweng/crawler/crawler/plugins/inputs/crawler"
-	"github.com/jimweng/crawler/crawler/plugins/outputs/mysql"
-	"github.com/jimweng/crawler/crawler/utils"
 )
 
 type CrawlerConfig struct {

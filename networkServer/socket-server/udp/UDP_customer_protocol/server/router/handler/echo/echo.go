@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/jimweng/networkServer/socket-server/udp/UDP_customer_protocol/server/router"
-	"github.com/jimweng/networkServer/socket-server/udp/UDP_customer_protocol/utils"
+	"go-third-party/networkServer/socket-server/udp/UDP_customer_protocol/server/router"
+	"go-third-party/networkServer/socket-server/udp/UDP_customer_protocol/utils"
 )
 
 type EchoController struct{}

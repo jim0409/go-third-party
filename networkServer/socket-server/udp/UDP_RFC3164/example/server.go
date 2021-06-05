@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	syslog "github.com/jimweng/networkServer/socket-server/udp/UDP_RFC3164"
+	syslog "go-third-party/networkServer/socket-server/udp/UDP_RFC3164"
 )
 
 func main() {

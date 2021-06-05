@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"strings"
 
+	"go-third-party/crawler/crawler/plugins/inputs"
+	"go-third-party/crawler/crawler/utils"
+
 	"github.com/PuerkitoBio/goquery"
-	"github.com/jimweng/crawler/crawler/plugins/inputs"
-	"github.com/jimweng/crawler/crawler/utils"
 )
 
 type QueryUrl struct {

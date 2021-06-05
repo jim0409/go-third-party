@@ -7,7 +7,7 @@ FROM golang:1.11.5-alpine3.8 AS builder
 
 # env for go workdir and mod vendor
 ENV GOPATH /go/
-ENV GO_WORKDIR $GOPATH/src/github.com/jimweng/forwardingproxy
+ENV GO_WORKDIR $GOPATH/src/go-third-party/forwardingproxy
 # claim workdir and move to workdir loc
 WORKDIR $GO_WORKDIR
 # copy files into workdir
@@ -18,7 +18,7 @@ FROM alpine:3.8
 RUN set -eux; \
         apk add --no-cache ca-certificates wget openssl
 # copy binary into container
-COPY --from=builder /go/src/github.com/jimweng/forwardingproxy/whoyare .
+COPY --from=builder /go/src/go-third-party/forwardingproxy/whoyare .
 # ADD ./entrypoint.sh .
 # RUN chmod +x entrypoint.sh
 

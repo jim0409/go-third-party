@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jimweng/networkServer/socket-server/udp/UDP_RFC3164/format"
+	"go-third-party/networkServer/socket-server/udp/UDP_RFC3164/format"
 )
 
 var (

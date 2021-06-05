@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jimweng/networkServer/socket-server/tcp/TCP_customer_protocol/server_client_framework/utils"
+	"go-third-party/networkServer/socket-server/tcp/TCP_customer_protocol/server_client_framework/utils"
 )
 
 // Msg 表示擬定要傳送的一個資料結構，該格式擬定如下

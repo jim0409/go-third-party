@@ -3,7 +3,7 @@ package format
 import (
 	"bufio"
 
-	"github.com/jimweng/networkServer/socket-server/udp/UDP_RFC3164/internal/syslogparser/rfc3164"
+	"go-third-party/networkServer/socket-server/udp/UDP_RFC3164/internal/syslogparser/rfc3164"
 )
 
 type RFC3164 struct{}

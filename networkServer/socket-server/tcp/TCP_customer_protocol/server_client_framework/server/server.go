@@ -5,8 +5,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/jimweng/networkServer/socket-server/tcp/TCP_customer_protocol/server_client_framework/server/router"
-	"github.com/jimweng/networkServer/socket-server/tcp/TCP_customer_protocol/server_client_framework/utils"
+	"go-third-party/networkServer/socket-server/tcp/TCP_customer_protocol/server_client_framework/server/router"
+	"go-third-party/networkServer/socket-server/tcp/TCP_customer_protocol/server_client_framework/utils"
 )
 
 var (

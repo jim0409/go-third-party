@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/jimweng/networkServer/socket-server/udp/UDP_customer_protocol/utils"
+	"go-third-party/networkServer/socket-server/udp/UDP_customer_protocol/utils"
 )
 
 func init() {

@@ -7,7 +7,8 @@ import (
 	"net"
 	"os"
 
-	pb "github.com/jimweng/crawler/pipeline/grpcproto"
+	pb "go-third-party/crawler/pipeline/grpcproto"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"google.golang.org/grpc"

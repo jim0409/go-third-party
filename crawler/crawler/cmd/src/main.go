@@ -10,8 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jimweng/crawler/crawler/config"
-	"github.com/jimweng/crawler/crawler/utils"
+	"go-third-party/crawler/crawler/config"
+	"go-third-party/crawler/crawler/utils"
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 

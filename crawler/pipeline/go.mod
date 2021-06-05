@@ -1,4 +1,4 @@
-module github.com/jimweng/crawler/pipeline
+module go-third-party/crawler/pipeline
 
 go 1.12
 

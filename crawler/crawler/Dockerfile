@@ -7,7 +7,7 @@ RUN set -eux; \
 
 # env for go workdir and mod vendor
 ENV GOPATH /go/
-ENV GO_WORKDIR $GOPATH/src/github.com/jimweng/crawler/crawler
+ENV GO_WORKDIR $GOPATH/src/go-third-party/crawler/crawler
 ENV GO111MODULE=on
 # claim workdir and move to workdir loc
 WORKDIR $GO_WORKDIR
@@ -20,7 +20,7 @@ FROM alpine:3.8
 RUN set -eux; \
         apk add --no-cache ca-certificates wget openssl
 # copy binary into container
-COPY --from=builder /go/src/github.com/jimweng/crawler/crawler/cmd/src .
+COPY --from=builder /go/src/go-third-party/crawler/crawler/cmd/src .
 ADD ./entrypoint.sh .
 RUN chmod +x entrypoint.sh
 

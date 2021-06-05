@@ -5,7 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/jimweng/crawler/crawler/utils"
+	"go-third-party/crawler/crawler/utils"
+
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 )

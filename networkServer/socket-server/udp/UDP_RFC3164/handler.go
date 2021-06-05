@@ -1,6 +1,6 @@
 package syslog
 
-import "github.com/jimweng/networkServer/socket-server/udp/UDP_RFC3164/format"
+import "go-third-party/networkServer/socket-server/udp/UDP_RFC3164/format"
 
 type Handler interface {
 	Handle(format.LogParts, int64, error)

@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jimweng/networkServer/socket-server/udp/UDP_customer_protocol/utils"
+	"go-third-party/networkServer/socket-server/udp/UDP_customer_protocol/utils"
 )
 
 const UdpAddr = "127.0.01:8001"
