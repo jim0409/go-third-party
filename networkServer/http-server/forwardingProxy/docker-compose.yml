@@ -1,0 +1,23 @@
+version: "3"
+
+networks:
+  proxy-net:
+    driver: bridge
+
+services:
+  reverseproxy:
+    # container_name: nginx  # to enable a loadbalance can not use fix container name
+    networks:
+      - proxy-net
+    image:  gianarb/privoxy:latest
+    ports:
+      - "8118:8118"
+
+  whoyare:
+    # container_name: grpcclient  # to enable a loadbalance can not use fix container name
+    networks:
+      - proxy-net
+    build:
+      context: .
+    ports:
+      - "10:10"

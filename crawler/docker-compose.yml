@@ -1,0 +1,66 @@
+version: "3"
+
+networks:
+  proxy-net:
+    driver: bridge
+
+services:
+  reverseproxy:
+    # container_name: nginx  # to enable a loadbalance can not use fix container name
+    networks:
+      - proxy-net
+    image:  nginx:1.13.7
+    ports:
+      - "80:80"
+    volumes:
+      - ./pipeline/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+  grpcclient:
+    # container_name: grpcclient  # to enable a loadbalance can not use fix container name
+    networks:
+      - proxy-net
+    build:
+      context: ./pipeline
+    ports:
+      - 8001
+    environment:
+      - GRPCADD=grpcserver
+      - ENV=client
+
+  grpcserver:
+    # container_name: grpcserver  # to enable a loadbalance can not use fix container name
+    networks:
+      - proxy-net
+    build:
+      context: ./pipeline
+    ports:
+      - 50051
+    environment:
+      - DBADD=mysql
+      - ENV=server
+    depends_on:
+      - crawler
+    restart: always
+
+  mysql:
+    # container_name: mysql  # to enable a mysql replaction cluster would use a better container name
+    networks:
+     - proxy-net
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+     - 3306:3306
+
+  crawler:
+    container_name: crawler # assume the crawler is not going to use the same settings, we can assign a specified name for it :)
+    networks:
+      - proxy-net
+    build:
+      context: ./crawler
+    depends_on: 
+      - mysql
+    restart: always
+    volumes:
+      - ./crawler/cmd/src/.env.conf:/.env.file  # assume .env.file would be specified first ... maybe env variable is better?
