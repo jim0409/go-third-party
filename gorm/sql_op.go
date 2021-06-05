@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"gorm.io/gorm"
@@ -97,4 +99,65 @@ func (db *OperationDatabase) deleteData(name string, email string) error {
 		return err
 	}
 	return nil
+}
+
+// 給定一連串的條件做 注入 or 查詢
+// https://zhiruchen.github.io/2017/08/31/bulk-insert-bulk-query-with-gorm/
+/*
+[
+	{"name": "jim1", "email": "example.com"},
+	{"name": "jim2", "email": "example.com"},
+	{"name": "jim2", "email": "example.com"}
+]
+*/
+func (db *OperationDatabase) bulkInsert(recrods []map[string]interface{}) error {
+	valueStrings := []string{}
+	valueArgs := []interface{}{}
+
+	for _, f := range recrods {
+		valueStrings = append(valueStrings, "(?, ?, ?)")
+
+		valueArgs = append(valueArgs, f["name"])
+		valueArgs = append(valueArgs, f["email"])
+	}
+
+	smt := `INSERT INTO record_t(id, field1, field2) VALUES %s ON DUPLICATE KEY UPDATE field2=VALUES(field2)`
+
+	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
+
+	tx := db.DB.Begin()
+	if err := tx.Exec(smt, valueArgs...).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
+}
+
+/*
+[
+	{"name": "jim1"},
+	{"name": "jim2"}
+]
+*/
+func (db *OperationDatabase) bulkQuery(filters []map[string]interface{}) (interface{}, error) {
+	rs := []*DemoTable{}
+
+	placeHolders := []string{}
+	args := []interface{}{}
+
+	for _, filter := range filters {
+		placeHolders = append(placeHolders, "?")
+		args = append(args, filter["name"])
+	}
+
+	sql := `select name, email from demo_table where name in(%s)`
+	sql = fmt.Sprintf(sql, strings.Join(placeHolders, ","))
+
+	if err := db.DB.Begin().Raw(sql, args...).Scan(&rs).Error; err != nil {
+		return nil, err
+	}
+
+	return &rs, nil
 }
