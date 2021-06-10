@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	http.Handle("/ws", http.HandlerFunc(wsHandler))
+	http.Handle("/ws/conn", http.HandlerFunc(wsHandler))
 	http.ListenAndServe(":3000", nil)
 }
 

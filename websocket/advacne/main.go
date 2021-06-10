@@ -13,20 +13,18 @@ var (
 	hub = ws.NewHub(nil) //新建一个用户
 )
 
-func init() {
+func main() {
 
 	go hub.Run() //开始获取用户中传送的数据
 
-	http.HandleFunc("/sockets/gxdash", func(res http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/ws/conn", func(res http.ResponseWriter, r *http.Request) {
 		ws.ServeWs(hub, res, r)
 	})
 	go beatInterval(3)
 
 	anotherBeatInterval(3)
-}
 
-func main() {
-	err := http.ListenAndServe(":8888", nil)
+	err := http.ListenAndServe(":3000", nil)
 	if err != nil {
 		log.Panic(err)
 	}

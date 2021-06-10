@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var addr = "ws://127.0.0.1:8888/sockets/gxdash"
+var addr = "ws://127.0.0.1:3000/ws/conn"
 
 func connect(addr string) (*websocket.Conn, error) {
 	c, _, err := websocket.DefaultDialer.Dial(addr, nil)
