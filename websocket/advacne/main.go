@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -20,10 +21,25 @@ func main() {
 	http.HandleFunc("/ws/conn", func(res http.ResponseWriter, r *http.Request) {
 		ws.ServeWs(hub, res, r)
 	})
+
+	// a corn beat for ws client
 	go beatInterval(3)
 
+	// non-block beat interval
 	anotherBeatInterval(3)
 
+	// refer to ./networkServer/http-server/simpleHttpServer/main.go
+	http.HandleFunc("/health", func(res http.ResponseWriter, r *http.Request) {
+		res.Header().Set("Content-Type", "text/html")
+		_, err := io.WriteString(res, "ok")
+		res.WriteHeader(http.StatusOK)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	})
+
+	// since http use the default ListenAndServer, hence add ws.HanderFunc inside
 	err := http.ListenAndServe(":3000", nil)
 	if err != nil {
 		log.Panic(err)

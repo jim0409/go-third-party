@@ -3,10 +3,10 @@
 
 # quick start
 1. start server
-> go run main.go
+> go run server.go
 
 2. start agent
-> websocat "ws://127.0.0.1:3000/ws"
+> websocat "ws://127.0.0.1:3000/ws/conn"
 
 # refer:
 - https://tutorialedge.net/golang/go-websocket-tutorial/
