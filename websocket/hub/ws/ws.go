@@ -6,8 +6,6 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	// log "github.com/Sirupsen/logrus"
-	// "github.com/gorilla/websocket"
 )
 
 const (
@@ -151,8 +149,13 @@ func (c *Client) readPump() {
 func (h *Hub) Run() {
 	for {
 		select {
-		case client := <-h.register: //客户端有新的连接就加入一个
+		case client := <-h.register: //客户端有新的连接就加入一个 ! 注意，這邊加入的 client 鍵值 是一個 key
+			log.Printf("new client was add to map ... %v\n", client)
 			h.clients[client] = true
+			// check map
+			for i, j := range h.clients {
+				log.Printf("%v___%v\n", i, j)
+			}
 		case client := <-h.unregister: //客户端断开连接，client会进入unregister中，直接在这里获取，删除一个
 			if _, ok := h.clients[client]; ok { //找到对应需要删除的client
 				delete(h.clients, client) //在map中根据对应value值，使用delete删除对应client
