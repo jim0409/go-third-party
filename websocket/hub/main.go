@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"go-third-party/websocket/advacne/ws"
+	"go-third-party/websocket/hub/ws"
 )
 
 var (
