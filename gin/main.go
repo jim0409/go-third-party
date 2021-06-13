@@ -71,7 +71,9 @@ func setupRouter() *gin.Engine {
 	})
 
 	router.GET("/", func(c *gin.Context) {
-		c.JSON(200, 123)
+		c.JSON(200, map[string]int{
+			"status": 1234567,
+		})
 	})
 
 	router.GET("/ws", wsHandler)
