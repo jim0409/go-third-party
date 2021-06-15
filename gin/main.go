@@ -94,13 +94,15 @@ func wsHandler(c *gin.Context) {
 }
 
 func pipelineMsg(c *websocket.Conn) {
-	_, msg, err := c.ReadMessage()
-	if err != nil && err != websocket.ErrCloseSent {
-		return
-	}
+	for {
+		_, msg, err := c.ReadMessage()
+		if err != nil && err != websocket.ErrCloseSent {
+			return
+		}
 
-	if err := c.WriteJSON(string(msg)); err != nil {
-		return
+		if err := c.WriteJSON(string(msg)); err != nil {
+			return
+		}
 	}
 }
 

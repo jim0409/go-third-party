@@ -3,6 +3,13 @@
 
 特別寫了這個框架來承接gRPC client
 
+## 使用gin起一個簡單的httpServer
+1. 練習使用gin架起一個簡單的httpServer
+2. 使用gin搭配gorm對DB做CRUD
+3. 使用nginx作分散式，讓gin可以分散
+4. 使用gin搭配go-redis做緩存
+5. 測試gin搭配go-redis做緩存下承受ab壓力狀況
+
 # flow
 1. 使用 gin server 來做 gRPC 轉發
 2. 因為單一個gin server只能乘載最多30000筆轉發，在gin server前面掛載nginx做輪詢以提高後面測試壓力
@@ -18,6 +25,3 @@
 # run with sacle api=n
 > docker-compose up --scale api=3 up -d
 
-
-# refer:
-- https://github.com/gin-gonic/gin
