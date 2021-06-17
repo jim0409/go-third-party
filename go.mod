@@ -11,7 +11,7 @@ require (
 	github.com/arangodb/go-driver v0.0.0-20210602123439-e63cef3dc348
 	github.com/aws/aws-lambda-go v1.24.0
 	github.com/bluele/slack v0.0.0-20180528010058-b4b4d354a079
-	github.com/casbin/casbin/v2 v2.31.3 // indirect
+	github.com/casbin/casbin/v2 v2.31.3
 	github.com/garyburd/redigo v1.6.2
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-ini/ini v1.62.0
@@ -29,6 +29,7 @@ require (
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.7
+	github.com/mitchellh/mapstructure v1.2.2
 	github.com/montanaflynn/stats v0.6.6
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1
