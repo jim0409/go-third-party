@@ -1,0 +1,15 @@
+syntax = "proto3";
+package proto;
+
+
+enum Role {
+    Server = 0;
+    Client = 1;
+}
+
+message UserInfo{
+    string message = 1;   // msg context
+    int32 length = 2;     // msg size
+    int32 cnt = 3;        // counter for msg
+    Role role = 4;        // 
+}
