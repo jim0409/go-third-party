@@ -17,7 +17,6 @@ require (
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-ini/ini v1.62.0
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/golang/mock v1.5.0
 	github.com/golang/protobuf v1.5.2
@@ -58,6 +57,7 @@ require (
 	go.uber.org/zap v1.17.0
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
 	google.golang.org/grpc v1.38.0
+	google.golang.org/protobuf v1.27.0 // indirect
 	gopkg.in/bufio.v1 v1.0.0-20140618132640-567b2bfa514e // indirect
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
