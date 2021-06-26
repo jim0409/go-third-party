@@ -50,6 +50,7 @@ func handleConnection(conn net.Conn, timeout int) {
 	// buffer用來承接`連結(conn)`讀取的資料
 	buffer := make([]byte, 1024)
 	messnager := make(chan byte)
+	defer conn.Close()
 	for {
 		n, err := conn.Read(buffer) // 使用buffer來承接`連結(conn)`讀取出來的資料以1024 byte矩陣的方式紀錄，並且回傳buffer的長度(n)
 		if err != nil {
@@ -93,8 +94,6 @@ func handleConnection(conn net.Conn, timeout int) {
 		go GravelChannel(tmpBuffer, messnager)
 
 	}
-	defer conn.Close()
-
 }
 
 //HeartBeating, determine if client send a message within set time by GravelChannel
