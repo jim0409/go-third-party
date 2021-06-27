@@ -19,14 +19,16 @@ type Msg struct {
 }
 
 func send(conn net.Conn) {
+	// send 6 packets to server
 	for i := 0; i < 6; i++ {
+		fmt.Printf("sent the %d_th packet\n", i+1)
 
 		// 做一個模擬判斷，讓不合法的meta data帶入，看是否會如期回傳"Hey! ..."
 		var metavalue string
 		if i%2 == 0 {
-			metavalue = "test"
+			metavalue = "pass"
 		} else {
-			metavalue = "testNotFound"
+			metavalue = "failed"
 		}
 
 		session := GetSession()
@@ -46,8 +48,8 @@ func send(conn net.Conn) {
 			},
 		}
 		result, _ := json.Marshal(message) // 將資料結構做json化
-		conn.Write(utils.Enpack((result))) // 將json格式透過先前定義好的protocol做打包
-		//conn.Write([]byte(message))
+		conn.Write(utils.Enpack(result))   // 將json格式透過先前定義好的protocol做打包
+		// conn.Write([]byte(message))
 
 		time.Sleep(1 * time.Second) // 每次傳送資料錢都做一小段間隔，也可以用來測試heartbeat的超時連線檢測是否生效
 	}

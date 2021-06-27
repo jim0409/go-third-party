@@ -49,7 +49,7 @@ func handleConnection(conn net.Conn, timeout int) {
 
 	// buffer用來承接`連結(conn)`讀取的資料
 	buffer := make([]byte, 1024)
-	messnager := make(chan byte)
+	messenger := make(chan byte)
 	defer conn.Close()
 	for {
 		n, err := conn.Read(buffer) // 使用buffer來承接`連結(conn)`讀取出來的資料以1024 byte矩陣的方式紀錄，並且回傳buffer的長度(n)
@@ -83,7 +83,7 @@ func handleConnection(conn net.Conn, timeout int) {
 
 			另一部分，如果連線建立過久，並沒有持續收到封包。就進行斷連
 		*/
-		go HeartBeating(conn, messnager, timeout)
+		go HeartBeating(conn, messenger, timeout)
 
 		//check if get message from client : 定義一個不斷去拿tmpBuffer的人
 		/*
@@ -91,7 +91,7 @@ func handleConnection(conn net.Conn, timeout int) {
 			當message chan裡面有值的時候，會觸發HeartBeating，從readerChannel收到來自client的msg
 			並且重新設定一個timer，nowTime + heart_beat_timeout
 		*/
-		go GravelChannel(tmpBuffer, messnager)
+		go GravelChannel(tmpBuffer, messenger)
 
 	}
 }

@@ -111,9 +111,10 @@ func init() {
 	// Route註冊echo這個資料結構到router上
 	Route(func(entry Msg) bool {
 		// 如果entry.Meta的值為"test"則返回true
-		if entry.Meta["meta"] == "test" {
-			return true
-		}
-		return false
+		// if entry.Meta["meta"] == "pass" {
+		// 	return true
+		// }
+		// return false
+		return entry.Meta["meta"] == "pass"
 	}, &echo)
 }

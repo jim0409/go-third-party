@@ -7,7 +7,7 @@ import (
 
 const (
 	ConstHeader       = "testHeader"
-	ConstHeaderLength = 10
+	ConstHeaderLength = len(ConstHeader)
 	ConstMLength      = 4
 )
 
@@ -37,30 +37,37 @@ func BytesToInt(b []byte) int {
 }
 
 func Enpack(message []byte) []byte {
-	return append(append([]byte(ConstHeader), IntToBytes(len(message))...), message...)
+	prefixLen := append([]byte(ConstHeader), IntToBytes(len(message))...)
+	// append message body
+	return append(prefixLen, message...)
+	// return append(append([]byte(ConstHeader), IntToBytes(len(message))...), message...)
 }
 
+// Depack would handle `each` packet as a block of buffer
 func Depack(buffer []byte) []byte {
-	length := len(buffer)
-
-	var i int
-	data := make([]byte, 32)
-	for i = 0; i < length; i = i + 1 {
-		if length < i+ConstHeaderLength+ConstMLength {
-			break
-		}
-		if string(buffer[i:i+ConstHeaderLength]) == ConstHeader {
-			messageLength := BytesToInt(buffer[i+ConstHeaderLength : i+ConstHeaderLength+ConstMLength])
-			if length < i+ConstHeaderLength+ConstMLength+messageLength {
-				break
-			}
-			data = buffer[i+ConstHeaderLength+ConstMLength : i+ConstHeaderLength+ConstMLength+messageLength]
-
-		}
-	}
-
-	if i == length {
+	bufLen := len(buffer)
+	if bufLen == 0 {
 		return make([]byte, 0)
 	}
+
+	prefLen := ConstHeaderLength + ConstMLength
+	data := make([]byte, 32)
+	for i := 0; i < bufLen; i++ {
+		if bufLen < i+prefLen {
+			break
+		}
+
+		if string(buffer[i:i+ConstHeaderLength]) != ConstHeader {
+			continue
+		}
+
+		messageLength := BytesToInt(buffer[i+ConstHeaderLength : i+prefLen])
+		if bufLen < i+prefLen+messageLength {
+			break
+		}
+
+		data = buffer[i+prefLen : i+prefLen+messageLength]
+	}
+
 	return data
 }
