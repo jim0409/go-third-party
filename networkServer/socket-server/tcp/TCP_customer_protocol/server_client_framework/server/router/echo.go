@@ -7,12 +7,13 @@ import (
 
 type EchoController struct{}
 
-func (e *EchoController) Excute(m Msg) []byte {
+func (e *EchoController) Excute(m Message) []byte {
 	log.Println("Receive the msg ", m)
 
 	m.Meta["echo"] = "ack"
 	msg, err := json.Marshal(m)
 	if err != nil {
+		log.Println(err)
 		return nil
 	}
 
@@ -22,7 +23,7 @@ func (e *EchoController) Excute(m Msg) []byte {
 func init() {
 	var echo EchoController
 
-	Route(func(entry Msg) bool { // Route註冊echo這個資料結構到router上
-		return entry.Meta["meta"] == "pass"
+	Route(func(m Message) bool { // Route註冊echo這個資料結構到router上
+		return m.Meta["meta"] == "pass"
 	}, &echo)
 }
