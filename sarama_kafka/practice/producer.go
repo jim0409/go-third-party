@@ -31,6 +31,10 @@ func (c *KafkaClient) PushToTopic(topic string, keydata []byte, valuedata []byte
 		Key:   sarama.StringEncoder(keydata),
 		Value: sarama.StringEncoder(valuedata),
 	}
+
+	// 接收到成功的消息
+	msg := <-c.Producer.Successes()
+	fmt.Println(msg, "--- offset --- ", msg.Offset)
 }
 
 func NewKafakaConfig(brokers []string, retryTime int) *KafkaConfig {
@@ -43,7 +47,14 @@ func NewKafakaConfig(brokers []string, retryTime int) *KafkaConfig {
 func NewKafkaProducerImpl(c *KafkaConfig) (KafkaProducerImpl, error) {
 	config := sarama.NewConfig()
 	config.Producer.Retry.Max = c.RetryMax
+	// config.Producer.RequiredAcks = sarama.NoResponse
 	config.Producer.RequiredAcks = sarama.WaitForAll
+	// config.Producer.RequiredAcks = sarama.WaitForLocal
+	/*
+		不設定 true 會導致 Producer.Successes() block .. 且無法保證 Producer 不掉落訊息;
+		https: //pkg.go.dev/github.com/Shopify/sarama#example-AsyncProducer-Goroutines
+	*/
+	config.Producer.Return.Successes = true
 
 	producer, err := sarama.NewAsyncProducer([]string(c.Brokers), config)
 	if err != nil {
@@ -54,6 +65,7 @@ func NewKafkaProducerImpl(c *KafkaConfig) (KafkaProducerImpl, error) {
 }
 
 func main() {
+
 	topic := "sarama"
 	broker := []string{"localhost:9092"}
 	retryMax := 5
