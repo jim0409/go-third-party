@@ -1,0 +1,7 @@
+{
+    "Request": {
+        "username": "testEcSite",
+        "password": "123456"
+    },
+    "Action": "AGLogin"
+}
