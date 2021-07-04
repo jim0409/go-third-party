@@ -1,8 +1,7 @@
-package signin
+package service
 
 import (
 	"encoding/json"
-	"go-third-party/json_webtoken/stateful_jwt_session/handler/conf"
 	"go-third-party/json_webtoken/stateful_jwt_session/redispool"
 	"net/http"
 	"time"
@@ -13,7 +12,7 @@ import (
 
 // Create the Signin handler
 func Signin(w http.ResponseWriter, r *http.Request) {
-	var creds conf.Credentials
+	var creds Credentials
 	// Get the JSON body and decode into credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
@@ -23,7 +22,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the expected password from our in memory map
-	expectedPassword, ok := conf.Users[creds.Username]
+	expectedPassword, ok := Users[creds.Username]
 
 	// If a password exists for the given user
 	// AND, if it is the same as the password we received, the we can move ahead
@@ -37,7 +36,7 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	// here, we have kept it as 5 minutes
 	expirationTime := time.Now().Add(5 * time.Minute)
 	// Create the JWT claims, which includes the username and expiry time
-	claims := &conf.Claims{
+	claims := &Claims{
 		Username: creds.Username,
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds
@@ -48,14 +47,15 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 	// Declare the token with the algorithm used for signing, and the claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// Create the JWT string
-	tokenString, err := token.SignedString(conf.JwtKey)
+	tokenString, err := token.SignedString(JwtKey)
 	if err != nil {
 		// If there is an error in creating the JWT return an internal server error
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	sessionToken := uuid.NewV4().String()
+	randId, _ := uuid.NewV4()
+	sessionToken := randId.String()
 	_, err = redispool.Cache.Do("SETEX", sessionToken, "120", tokenString)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

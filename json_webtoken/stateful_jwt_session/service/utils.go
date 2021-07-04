@@ -1,4 +1,4 @@
-package conf
+package service
 
 import (
 	"github.com/dgrijalva/jwt-go"

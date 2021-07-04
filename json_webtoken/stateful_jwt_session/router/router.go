@@ -1,3 +1,12 @@
 package router
 
-// if need ... add different paths before instead of add handler directly
+import (
+	"net/http"
+
+	"go-third-party/json_webtoken/stateful_jwt_session/service"
+)
+
+func init() {
+	http.HandleFunc("/signin", service.Signin)
+	http.HandleFunc("/welcome", service.Welcome)
+}

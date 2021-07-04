@@ -1,8 +1,7 @@
-package welcome
+package service
 
 import (
 	"fmt"
-	"go-third-party/json_webtoken/stateful_jwt_session/handler/conf"
 	"go-third-party/json_webtoken/stateful_jwt_session/redispool"
 	"net/http"
 
@@ -43,14 +42,14 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Initialize a new instance of `Claims`
-	claims := &conf.Claims{}
+	claims := &Claims{}
 
 	// Parse the JWT string and store the result in `claims`.
 	// Note that we are passing the key in this method as well. This method will return an error
 	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
 	// or if the signature does not match
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return conf.JwtKey, nil
+		return JwtKey, nil
 	})
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {

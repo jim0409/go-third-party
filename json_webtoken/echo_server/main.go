@@ -1,13 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
-	json "github.com/json-iterator/go"
 )
 
 // Create the JWT key used to create the signature
