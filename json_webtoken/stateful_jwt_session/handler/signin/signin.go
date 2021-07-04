@@ -2,12 +2,12 @@ package signin
 
 import (
 	"encoding/json"
+	"go-third-party/json_webtoken/stateful_jwt_session/handler/conf"
+	"go-third-party/json_webtoken/stateful_jwt_session/redispool"
 	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jimweng/json_webtoken/stateful_jwt_session/handler/conf"
-	"github.com/jimweng/json_webtoken/stateful_jwt_session/redispool"
 	uuid "github.com/satori/go.uuid"
 )
 

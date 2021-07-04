@@ -13,6 +13,7 @@ require (
 	github.com/bluele/slack v0.0.0-20180528010058-b4b4d354a079
 	github.com/casbin/casbin/v2 v2.31.3
 	github.com/casbin/gorm-adapter/v3 v3.3.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/garyburd/redigo v1.6.2
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-ini/ini v1.62.0
@@ -27,6 +28,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/influxdata/influxdb v1.9.1
 	github.com/jinzhu/gorm v1.9.16
+	github.com/json-iterator/go v1.1.10
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible

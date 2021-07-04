@@ -1,10 +1,9 @@
 package handler
 
 import (
+	"go-third-party/json_webtoken/stateful_jwt_session/handler/signin"
+	"go-third-party/json_webtoken/stateful_jwt_session/handler/welcome"
 	"net/http"
-
-	"github.com/jimweng/json_webtoken/stateful_jwt_session/handler/signin"
-	"github.com/jimweng/json_webtoken/stateful_jwt_session/handler/welcome"
 )
 
 func init() {

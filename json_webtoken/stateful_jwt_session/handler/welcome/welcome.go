@@ -2,11 +2,11 @@ package welcome
 
 import (
 	"fmt"
+	"go-third-party/json_webtoken/stateful_jwt_session/handler/conf"
+	"go-third-party/json_webtoken/stateful_jwt_session/redispool"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jimweng/json_webtoken/stateful_jwt_session/handler/conf"
-	"github.com/jimweng/json_webtoken/stateful_jwt_session/redispool"
 )
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
