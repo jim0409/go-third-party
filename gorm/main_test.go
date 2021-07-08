@@ -61,7 +61,7 @@ func TestNewDBOperation(t *testing.T) {
 	}
 	update_email := "update_email@example.com"
 
-	opdb.debug()
+	opdb.Debug()
 
 	err = opdb.create(dt.Name, dt.Email)
 	assert.Nil(t, err)

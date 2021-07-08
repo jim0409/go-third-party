@@ -2,65 +2,35 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"gorm.io/gorm"
 )
 
-type dtMethod interface {
+type tbMethod interface {
 	create(name string, email string) error
 	queryWithName(name string) (string, error)
 	updateEmail(name string, email string) error
 	deleteData(name string, email string) error
-	transaction() error
+	// transaction(string, string) error
 	cleanAll() error
 }
 
 // Our DemoTable Struct
 type DemoTable struct {
 	gorm.Model
-	Name  string `gorm:"primary_key"`
+	Name  string `gorm:"primary_key;unique"`
 	Email string
 }
 
-func (db *OperationDatabase) cleanAll() error {
+func (db *Operation) cleanAll() error {
 	db.DB.Exec("drop table demo_tables")
-	return nil
-}
-
-// An transaction example for `gorm`
-func (db *OperationDatabase) transaction() error {
-	tx := db.DB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	if err := tx.Error; err != nil {
-		return err
-	}
-
-	// under transaction mode create an object
-	if err := tx.Create(&DemoTable{Name: "Jim"}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Create(&DemoTable{Name: "Jim2"}).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	return tx.Commit().Error
-
 	return nil
 }
 
 // 實做CRUD
 // Create
-func (db *OperationDatabase) create(name string, email string) error {
+func (db *Operation) create(name string, email string) error {
 	var dt = &DemoTable{
 		Name:  name,
 		Email: email,
@@ -72,7 +42,7 @@ func (db *OperationDatabase) create(name string, email string) error {
 }
 
 // Read
-func (db *OperationDatabase) queryWithName(name string) (string, error) {
+func (db *Operation) queryWithName(name string) (string, error) {
 	var dt = &DemoTable{
 		Name: name,
 	}
@@ -83,20 +53,16 @@ func (db *OperationDatabase) queryWithName(name string) (string, error) {
 }
 
 // Update ... 更新相當於Read以後在把Read的資料改成新的資料；notes:在gorm裡面，更新以後也會更新updated_at的時間
-func (db *OperationDatabase) updateEmail(name string, email string) error {
-	// log.Printf("The %s's Email has been update to %s", name, db.DB.First(&DemoTable{Name: name}).Update(&DemoTable{Name: name, Email: email}).Value)
-	if err := db.DB.First(&DemoTable{Name: name}).Update(&DemoTable{Name: name, Email: email}).Error; err != nil {
-		return err
-	}
-	return nil
+func (db *Operation) updateEmail(name string, email string) error {
+	// return db.DB.First(&DemoTable{Name: name}).Updates(&DemoTable{Name: name, Email: email}).Error
+	return db.DB.Updates(&DemoTable{Name: name, Email: email}).Where("name = ? and deleted_at is NULL", name).Error
 }
 
 // Delete ... 因為delete已經有預設方法，這邊改用deleteData來宣告該函數；notes:在gorm裡面刪除不是代表從db完全移除。而是去更改deleted_at的時間
-func (db *OperationDatabase) deleteData(name string, email string) error {
+func (db *Operation) deleteData(name string, email string) error {
 	// log.Printf("The %s's Email has been delete (%s)", name, db.DB.Delete(&DemoTable{Name: name, Email: email}).Value)
 	if err := db.DB.Where("email = ?", email).Delete(&DemoTable{}).Error; err != nil {
-		log.Fatal("Encount Error with no data to delete")
-		return err
+		return fmt.Errorf("Encount Error with no data to delete %v\n", err)
 	}
 	return nil
 }
@@ -110,7 +76,7 @@ func (db *OperationDatabase) deleteData(name string, email string) error {
 	{"name": "jim2", "email": "example.com"}
 ]
 */
-func (db *OperationDatabase) bulkInsert(recrods []map[string]interface{}) error {
+func (db *Operation) bulkInsert(recrods []map[string]interface{}) error {
 	valueStrings := []string{}
 	valueArgs := []interface{}{}
 
@@ -141,7 +107,7 @@ func (db *OperationDatabase) bulkInsert(recrods []map[string]interface{}) error 
 	{"name": "jim2"}
 ]
 */
-func (db *OperationDatabase) bulkQuery(filters []map[string]interface{}) (interface{}, error) {
+func (db *Operation) bulkQuery(filters []map[string]interface{}) (interface{}, error) {
 	rs := []*DemoTable{}
 
 	placeHolders := []string{}

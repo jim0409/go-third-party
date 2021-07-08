@@ -143,7 +143,8 @@ func RecommandTypeOfTransactionSmallAndLoop(db *gorm.DB) error {
 	}
 	defer tx.Rollback()
 
-	for {
+	// 假設有 10 次 交易要進行
+	for i := 0; i < 10; i++ {
 		if err = RecommandTypeOfTransactionCommon(tx); err != nil {
 			return err
 		}
