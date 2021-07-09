@@ -1,20 +1,28 @@
-# Use root/example as user/password credentials
-version: '3.1'
+version: '3'
 
 services:
-
-  db:
-    container_name: mysql
-    image: mysql
-    command: 
-      - --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_ROOT_PASSWORD: secret
+  nginx:
+    container_name: nginx
+    image: nginx:1.13.7
+    volumes:
+     - ./statics:/usr/share/nginx/html
     ports:
-      - 3306:3306
+     - 80:80
 
   adminer:
     container_name: adminer
     image: adminer
     ports:
       - 8080:8080
+
+  mysql:
+    container_name: mysql
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: jim
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+     - 3306:3306

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -33,7 +34,25 @@ func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.AutoMigrate(&DemoTable{})
+
+	if os.Getenv("DEBUG") != "false" {
+		err = db.Migrator().DropTable(
+			&DemoTable{},
+			&BankUsr{},
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	err = db.AutoMigrate(
+		&DemoTable{},
+		&BankUsr{},
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Operation{DB: db}, err
 }
 

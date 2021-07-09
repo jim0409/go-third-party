@@ -19,9 +19,9 @@ func main() {
 
 	mysqlAddr := "127.0.0.1"
 	mysqlPort := "3306"
-	mysqlOpDB := "mysql"
-	mysqlUsr := "root"
-	mysqUsrPwd := "secret"
+	mysqlOpDB := "testdb"
+	mysqlUsr := "jim"
+	mysqUsrPwd := "password"
 
 	newDB := NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
 	db, err := newDB.NewDBConnection()
@@ -39,26 +39,53 @@ func main() {
 		}
 	}()
 
-	if err := db.create("jim", "test-mail"); err != nil {
+	if err = db.create("jim", "test-mail"); err != nil {
 		log.Printf("Error happend while creating records %s\n", err)
-	} else {
-		log.Println("success insert record into mysql")
 	}
 
-	if queryrest, err := db.queryWithName("jim"); err != nil {
+	str, err := db.queryWithName("jim")
+	if err != nil {
 		log.Printf("Error happend while querying %s\n", err)
-	} else {
-		log.Printf("The query result is %v\n", queryrest)
 	}
+	log.Printf("name %v\n", str)
 
-	if err := db.updateEmail("jim", "an-test-email"); err != nil {
+	err = db.updateEmail("jim", "an-test-email")
+	if err != nil {
 		log.Printf("Error happend while updating email %s\n", err)
 	}
 
-	if queryrest, err := db.queryWithName("jim"); err != nil {
+	str, err = db.queryWithName("jim")
+	if err != nil {
 		log.Printf("Error happend while querying %s\n", err)
-	} else {
-		log.Printf("The query result is %v\n", queryrest)
 	}
 
+	log.Printf("updatd name %v\n", str)
+
+	if err := db.CreateBankAccount("jim01", 100); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := db.CreateBankAccount("jim02", 100); err != nil {
+		log.Fatal(err)
+	}
+
+	money, err := db.Deposit("jim01", 200)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("update money %v\n", money)
+
+	money, err = db.Withdraw("jim01", 1000)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("withdraw %v\n", money)
+
+	money, err = db.Balance("jim02")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("balance %v\n", money)
 }
