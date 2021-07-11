@@ -23,9 +23,12 @@ func main() {
 	hander(err)
 	defer d.Close()
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 5; i++ {
 		tableName := fmt.Sprintf("jim_%d", i)
-		db.Exec(DropTable(tableName))
+		/*
+			1. 用 sql 直接渲染執行 ..
+		*/
+		// db.Exec(DropTable(tableName))
 		db.Exec(CreateTable(tableName))
 
 		name := fmt.Sprintf("jim_%d", i)
@@ -33,6 +36,17 @@ func main() {
 		db.Table(tableName).Create(&TableStruct{Name: name, Age: age})
 	}
 
+	for i := 5; i < 10; i++ {
+		tableName := fmt.Sprintf("jim_%d", i)
+		name := fmt.Sprintf("jim_%d", i)
+		age := fmt.Sprintf("%d", i)
+
+		/*
+			2. 可以透過 指定 tableName 的方法動態創表
+		*/
+		db.Table(tableName).AutoMigrate(&TableStruct{})
+		db.Table(tableName).Create(&TableStruct{Name: name, Age: age})
+	}
 }
 
 type TableStruct struct {

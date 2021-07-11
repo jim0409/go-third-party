@@ -12,3 +12,10 @@
 2021/07/11 .. 目前 gorm 2.0 還沒有釋出 置換 TableName 方法來達到動態增加 table的功能
 -->
 - https://gorm.io/docs/migration.html
+- https://gorm.io/zh_CN/docs/conventions.html
+- https://dev.mysql.com/doc/refman/8.0/en/create-table.html
+
+
+### 命名規則
+- https://gorm.io/docs/gorm_config.html
+- https://gorm.io/zh_CN/docs/conventions.html
