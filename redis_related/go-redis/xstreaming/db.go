@@ -26,16 +26,23 @@ type redisObject struct {
 }
 
 type redisDAO interface {
-	len(string) (int64, error)
+	len(string) int64
 	xread(string)
 	xadd(string, map[string]interface{}) error
 }
 
-func (r *redisObject) len(streamName string) (int64, error) {
-	return r.ro.XLen(streamName).Result()
+func (r *redisObject) len(streamName string) int64 {
+	l, err := r.ro.XLen(streamName).Result()
+	if err != nil {
+		log.Printf("retrive stream len failed %v\n", streamName)
+		return 0
+	}
+	return l
 }
 
 func (r *redisObject) xadd(streamName string, value map[string]interface{}) error {
+	tmp := r.len(streamName)
+
 	err := r.ro.XAdd(&redis.XAddArgs{
 		Stream: streamName,
 		Values: value,
@@ -45,14 +52,17 @@ func (r *redisObject) xadd(streamName string, value map[string]interface{}) erro
 		return err
 	}
 
-	// r.ro.XLen(streamName)
-	r.len(streamName)
+	if tmp == r.len(streamName) {
+		return fmt.Errorf("write_failed")
+	}
+
+	return nil
 }
 
 func (r *redisObject) xread(streamName string) {
 	entries, err := r.ro.XRead(&redis.XReadArgs{
 		Streams: []string{streamName, "0-1000"},
-		Count:   100,
+		Count:   1,
 		Block:   2 * time.Millisecond,
 	}).Result()
 
@@ -66,5 +76,6 @@ func (r *redisObject) xread(streamName string) {
 
 	for _, msg := range entries[0].Messages {
 		fmt.Println(msg)
+		fmt.Println(r.ro.XDel(streamName, msg.ID).Result())
 	}
 }
