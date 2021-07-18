@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  adminer:
+    container_name: adminer
+    image: adminer
+    ports:
+      - 8080:8080
+
+  main:
+    container_name: main
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: main
+      MYSQL_USER: jim
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+     - 3306:3306
+
+  shd1:
+    container_name: shard1
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: message
+      MYSQL_USER: jim
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+     - 3301:3306
+
+  shd2:
+    container_name: shard2
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: message
+      MYSQL_USER: jim
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+     - 3302:3306
+
+  shd3:
+    container_name: shard3
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: message
+      MYSQL_USER: jim
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+     - 3303:3306
+
