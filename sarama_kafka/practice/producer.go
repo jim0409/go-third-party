@@ -67,10 +67,14 @@ func NewKafkaProducerImpl(c *KafkaConfig) (KafkaProducerImpl, error) {
 func main() {
 
 	topic := "sarama"
-	broker := []string{"localhost:9092"}
+
+	// broker1 := "127.0.0.1:9091"
+	broker2 := "127.0.0.1:9092"
+	// broker3 := "127.0.0.1:9093"
+	brokers := []string{broker2}
 	retryMax := 5
 
-	kc := NewKafakaConfig(broker, retryMax)
+	kc := NewKafakaConfig(brokers, retryMax)
 	kpI, err := NewKafkaProducerImpl(kc)
 	if err != nil {
 		panic(err)

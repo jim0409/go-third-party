@@ -79,11 +79,14 @@ func NewConsumeHandler(topics []string, brokers []string, group string) Consumer
 func main() {
 	sarama.Logger = log.New(os.Stdout, "[sarama - practice]", log.LstdFlags)
 	topics := []string{"sarama"}
-	broker := "127.0.0.1:9092"
+	// broker1 := "127.0.0.1:9091"
+	broker2 := "127.0.0.1:9092"
+	// broker3 := "127.0.0.1:9093"
 	group := "test"
 
 	// declare the consumer handler
-	consumer := NewConsumeHandler(topics, []string{broker}, group)
+	// consumer := NewConsumeHandler(topics, []string{broker1, broker2, broker3}, group)
+	consumer := NewConsumeHandler(topics, []string{broker2}, group)
 	errs := consumer.Execute(topics)
 	for err := range errs {
 		log.Fatal(err)

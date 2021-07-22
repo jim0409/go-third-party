@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/Jeffail/gabs v1.4.0
 	github.com/PuerkitoBio/goquery v1.6.1
-	github.com/Shopify/sarama v1.29.0
+	github.com/Shopify/sarama v1.29.1
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
 	github.com/arangodb/go-driver v0.0.0-20210602123439-e63cef3dc348
@@ -21,6 +21,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/golang/mock v1.5.0
 	github.com/golang/protobuf v1.5.2
+	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v1.8.4
 	github.com/google/gopacket v1.1.19
 	github.com/googollee/go-socket.io v1.6.0
@@ -28,7 +29,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/influxdata/influxdb v1.9.1
 	github.com/jinzhu/gorm v1.9.16
-	github.com/json-iterator/go v1.1.10
+	github.com/klauspost/compress v1.13.1 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible
@@ -43,6 +44,7 @@ require (
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/olivere/elastic v6.2.35+incompatible
 	github.com/oschwald/maxminddb-golang v1.8.0
+	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/prometheus/client_golang v1.10.0
 	github.com/rs/zerolog v1.22.0
 	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
@@ -57,7 +59,8 @@ require (
 	github.com/zommage/cron v0.0.0-20180918061821-210507a89644
 	go.mongodb.org/mongo-driver v1.5.3
 	go.uber.org/zap v1.17.0
-	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/net v0.0.0-20210716203947-853a461950ff
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.27.0 // indirect
 	gopkg.in/bufio.v1 v1.0.0-20140618132640-567b2bfa514e // indirect
