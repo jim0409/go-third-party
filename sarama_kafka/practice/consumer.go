@@ -63,6 +63,13 @@ type ConsumerImp interface {
 
 func NewConsumeHandler(topics []string, brokers []string, group string) ConsumerImp {
 	config := sarama.NewConfig()
+	config.Consumer.Group.Rebalance.Strategy = sarama.BalanceStrategyRoundRobin
+	/*
+		無法調整 ConsumerGroup的 partition 但是可以改輪詢策略，預設 rebalancing
+		refer:
+		- https://stackoverflow.com/a/59600558
+		- https://blog.csdn.net/u013474436/article/details/109599966
+	*/
 	config.Consumer.Return.Errors = true
 	config.Consumer.Offsets.AutoCommit.Enable = false
 	client, err := sarama.NewConsumerGroup(brokers, group, config)

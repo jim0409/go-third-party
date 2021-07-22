@@ -19,3 +19,12 @@ services:
       KAFKA_BROKER_ID: "1"
       KAFKA_LOG_DIRS: "/opt/kafka/data"
       KAFKA_CREATE_TOPICS: "sarama:1:2"
+
+  kafdrop:
+    container_name: kafdrop
+    image: thomsch98/kafdrop
+    ports:
+      - "9010:9010"
+    environment:
+      ZK_HOSTS: zookeeper:2181
+      LISTEN: 9010
