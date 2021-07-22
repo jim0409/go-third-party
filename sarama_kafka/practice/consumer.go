@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/Shopify/sarama"
 )
@@ -12,11 +13,15 @@ type Consumer struct {
 	ConsumerGroup sarama.ConsumerGroup
 }
 
-func (c *Consumer) Setup(sarama.ConsumerGroupSession) error {
+// 在運行 consumer 以前會使用 setup
+func (c *Consumer) Setup(s sarama.ConsumerGroupSession) error {
+	// s.MarkOffset(c.Topics)
 	return nil
 }
 
-func (c *Consumer) Cleanup(sarama.ConsumerGroupSession) error {
+// 當 consumer 運行結束後執行 cleanup
+func (c *Consumer) Cleanup(s sarama.ConsumerGroupSession) error {
+	// s.Commit()
 	return nil
 }
 
@@ -24,13 +29,13 @@ func (c *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim saram
 	for message := range claim.Messages() {
 		log.Printf("Message claimed: key = %s, value = %v, topic = %s, partition = %v, offset = %v", string(message.Key), string(message.Value), message.Topic, message.Partition, message.Offset)
 		session.MarkMessage(message, "")
+		session.Commit() // 要是沒有 commit 就會對於該 consumer gorup 重複消費!
 	}
 
 	return nil
 }
 
-func (c *Consumer) Execute(topics []string) error {
-	// var err error
+func (c *Consumer) Execute(topics []string) chan error {
 	var echan = make(chan error, 1)
 	go func() {
 		for {
@@ -39,10 +44,11 @@ func (c *Consumer) Execute(topics []string) error {
 				echan <- err
 				return
 			}
+
 		}
 	}()
 
-	return <-echan
+	return echan
 }
 
 type ConsumerImp interface {
@@ -52,11 +58,13 @@ type ConsumerImp interface {
 	ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error
 
 	// start loop consume msg via consumer group
-	Execute([]string) error
+	Execute([]string) chan error
 }
 
 func NewConsumeHandler(topics []string, brokers []string, group string) ConsumerImp {
 	config := sarama.NewConfig()
+	config.Consumer.Return.Errors = true
+	config.Consumer.Offsets.AutoCommit.Enable = false
 	client, err := sarama.NewConsumerGroup(brokers, group, config)
 	if err != nil {
 		log.Panicf("Error creating consumer group client: %v", err)
@@ -69,13 +77,15 @@ func NewConsumeHandler(topics []string, brokers []string, group string) Consumer
 }
 
 func main() {
+	sarama.Logger = log.New(os.Stdout, "[sarama - practice]", log.LstdFlags)
 	topics := []string{"sarama"}
 	broker := "127.0.0.1:9092"
 	group := "test"
 
 	// declare the consumer handler
 	consumer := NewConsumeHandler(topics, []string{broker}, group)
-	if err := consumer.Execute(topics); err != nil {
+	errs := consumer.Execute(topics)
+	for err := range errs {
 		log.Fatal(err)
 	}
 }
