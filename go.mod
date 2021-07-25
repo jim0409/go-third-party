@@ -45,7 +45,7 @@ require (
 	github.com/olivere/elastic v6.2.35+incompatible
 	github.com/oschwald/maxminddb-golang v1.8.0
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
-	github.com/prometheus/client_golang v1.10.0
+	github.com/prometheus/client_golang v1.11.0
 	github.com/rs/zerolog v1.22.0
 	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	github.com/sirupsen/logrus v1.8.1
@@ -57,6 +57,9 @@ require (
 	github.com/wangtuanjie/ip17mon v1.5.2
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9 // indirect
 	github.com/zommage/cron v0.0.0-20180918061821-210507a89644
+	go.etcd.io/etcd/client/pkg/v3 v3.5.0
+	go.etcd.io/etcd/raft/v3 v3.5.0
+	go.etcd.io/etcd/server/v3 v3.5.0
 	go.mongodb.org/mongo-driver v1.5.3
 	go.uber.org/zap v1.17.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
