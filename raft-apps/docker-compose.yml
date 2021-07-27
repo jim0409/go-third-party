@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    hostname: redis-commander
+    environment:
+      - REDIS_HOSTS=redis:redis:6379:0:yourpassword
+    ports:
+      - "8081:8081"
+
+  redis:
+    image: redis
+    command: redis-server --requirepass yourpassword
+    ports:
+      - "6379:6379"
+
+
+
