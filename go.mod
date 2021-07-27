@@ -57,6 +57,7 @@ require (
 	github.com/wangtuanjie/ip17mon v1.5.2
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9 // indirect
 	github.com/zommage/cron v0.0.0-20180918061821-210507a89644
+	go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738
 	go.etcd.io/etcd/client/pkg/v3 v3.5.0
 	go.etcd.io/etcd/raft/v3 v3.5.0
 	go.etcd.io/etcd/server/v3 v3.5.0
@@ -74,3 +75,8 @@ require (
 	gorm.io/gorm v1.21.10
 	gotest.tools v2.2.0+incompatible
 )
+
+// bug from etcd
+// refer: https://www.cnblogs.com/anmutu/p/etcd.html
+// google.golang.org/grpc 1.26 之後的版本是不支持 clientv3的，所以要把它改成 1.26.0
+replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
