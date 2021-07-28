@@ -17,7 +17,7 @@ import (
 */
 
 func InitDB() (db.OPDB, error) {
-	mysqlAddr := "127.0.0.1"
+	mysqlAddr := "mysql"
 	mysqlPort := "3306"
 	mysqlOpDB := "raft"
 	mysqlUsr := "raft"
@@ -27,21 +27,54 @@ func InitDB() (db.OPDB, error) {
 }
 
 func InitNodeConfig() (int, int, string, bool) {
-	id := flag.Int("id", 1, "node ID")
-	kvport := flag.Int("port", 9121, "key-value server port")
-	cluster := flag.String("cluster", "http://127.0.0.1:9021", "comma separated cluster peers")
+	id := flag.Int("id", 0, "node ID") // 主要用於 recover status
+
+	// 對於初次註冊的節點，需要帶入一些參數
+	// TODO: 給予系統話參數，或設定檔考慮 e.g. randomPort
+	port := flag.Int("port", 0, "key-value server port")
+	addr := flag.String("addr", "http://127.0.0.1:12379", "used for peer-connection  port")
 	join := flag.Bool("join", false, "join an existing cluster")
 	flag.Parse()
-	return *id, *kvport, *cluster, *join
+
+	db, err := InitDB()
+	if err != nil {
+		panic(err)
+	}
+
+	if *id == 0 {
+		// 自動加入新節點
+		aid, err := db.InsertDbRecord(*port, *addr)
+		if err != nil {
+			panic(err)
+		}
+		*id = aid
+
+	}
+
+	if *port == 0 {
+		nodeInfo, err := db.ReturnNodeInfo(*id)
+		if err != nil {
+			panic(err)
+		}
+		*port = nodeInfo.Port
+	}
+
+	clusters, err := db.GetClusterIps()
+	if err != nil {
+		panic(err)
+	}
+
+	if len(clusters) > 1 {
+		*join = true
+	}
+	ips := strings.Join(clusters, ",")
+
+	return *id, *port, ips, *join
 }
 
 func main() {
 
 	id, kvport, cluster, join := InitNodeConfig()
-	// db, err := InitDB()
-	// if err != nil {
-	// 	panic(err)
-	// }
 
 	proposeC := make(chan string)
 	defer close(proposeC)

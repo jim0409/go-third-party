@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"log"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -35,11 +35,9 @@ func TestInsertNodeTable(t *testing.T) {
 	assert.Nil(t, err)
 	fmt.Println(id)
 
-	ns, err := db.ReturnNodes()
+	linkUrl, err := db.GetClusterIps()
 	assert.Nil(t, err)
-	// linkUrl := ""
-	for _, n := range *ns {
-		// linkUrl= fmt.Sprintf("%v:2379,",ns)
-		log.Println(n)
-	}
+	url := strings.Join(linkUrl, ",")
+
+	fmt.Println(url)
 }

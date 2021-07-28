@@ -9,8 +9,11 @@ type Node struct {
 }
 
 type ImpNode interface {
-	InsertDbRecord(int, string) (uint, error)
+	InsertDbRecord(int, string) (int, error)
 	ReturnNodes() (*[]Node, error)
+	GetClusterIps() ([]string, error)
+
+	ReturnNodeInfo(int) (*Node, error)
 }
 
 var nodeTable = "node_table"
@@ -19,21 +22,41 @@ func (n *Node) TableName() string {
 	return nodeTable
 }
 
-// 在插入新的節點以後，會同時返回該節點的註冊用ID
-func (db *Operation) InsertDbRecord(port int, addr string) (uint, error) {
+// InsertDBRecord : 在加入新的節點時，會主動去註冊節點的溝通 port 以及 peer-connectin address
+func (db *Operation) InsertDbRecord(port int, addr string) (int, error) {
 	n := &Node{
 		Port: port,
 		Addr: addr,
 	}
-	return n.ID, db.DB.Table(nodeTable).Create(n).Error
+	return int(n.ID), db.DB.Table(nodeTable).Create(n).Error
+}
+
+func (db *Operation) ReturnNodeInfo(id int) (*Node, error) {
+	n := &Node{}
+	if err := db.DB.Table(nodeTable).Select(`*`).Where(`id = ? and deleted_at is NULL`, id).Scan(n).Error; err != nil {
+		return nil, err
+	}
+	return n, nil
 }
 
 func (db *Operation) ReturnNodes() (*[]Node, error) {
-
 	ns := &[]Node{}
-	err := db.DB.Table(nodeTable).Select(`*`).Where(`deleted_at is NULL`).Scan(ns).Error
-	if err != nil {
+	if err := db.DB.Table(nodeTable).Select(`*`).Where(`deleted_at is NULL`).Order(`id`).Scan(ns).Error; err != nil {
 		return nil, err
 	}
 	return ns, nil
+}
+
+func (db *Operation) GetClusterIps() ([]string, error) {
+	urls := []string{}
+	ns, err := db.ReturnNodes()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, n := range *ns {
+		urls = append(urls, n.Addr)
+	}
+
+	return urls, nil
 }
