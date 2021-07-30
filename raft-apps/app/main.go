@@ -24,6 +24,7 @@ var (
 	path         = flag.String("config", "./conf/app.dev.ini", "config location")
 	checkcommit  = flag.Bool("version", false, "burry code for check version")
 	gitcommitnum string
+	defaultWT    = 5
 )
 
 func checkComimit() {
@@ -75,6 +76,14 @@ func Init() error {
 		return fmt.Errorf("no peer addr was provided!")
 	}
 
+	if cfg.LeaderAddr == "" {
+		return fmt.Errorf("lack of leader address")
+	}
+
+	if cfg.WaitToClose == 0 {
+		cfg.WaitToClose = defaultWT
+	}
+
 	clusters, err := opdb.GetClusterIps()
 	if err != nil {
 		return err
@@ -84,7 +93,7 @@ func Init() error {
 		join = true
 	}
 
-	raftnode = raft.InitRaftNode(cfg.ID, cfg.HttpPort, clusters, join)
+	raftnode = raft.InitRaftNode(cfg.ID, cfg.HttpPort, clusters, join, cfg.LeaderAddr, cfg.WaitToClose)
 
 	return nil
 }

@@ -11,10 +11,12 @@ type Config struct {
 
 // BaseConf inlclude deatils server components
 type BaseConf struct {
-	ID       int    `ini:"ID"`
-	HttpPort int    `ini:"HttpPort"` // http port
-	PeerAddr string `ini:"PeerAddr"` // peer address
-	Env      string `ini:"Env"`      // 運行環境
+	ID          int    `ini:"ID"`
+	HttpPort    int    `ini:"HttpPort"`    // http port
+	PeerAddr    string `ini:"PeerAddr"`    // peer address
+	LeaderAddr  string `ini:"LeaderAddr"`  // leader address
+	WaitToClose int    `ini:"WaitToClose"` // wait time to close
+	Env         string `ini:"Env"`         // 運行環境
 }
 
 // DbConf is for mysql settings

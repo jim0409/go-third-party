@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"go.etcd.io/etcd/raft/v3/raftpb"
 )
@@ -14,8 +15,10 @@ type RaftNode struct {
 	kvport   int
 	clusters []string
 
-	proc  chan string
-	confc chan raftpb.ConfChange
+	proc       chan string
+	confc      chan raftpb.ConfChange
+	leaderaddr string
+	wt         int // wait time to close
 }
 
 func (r *RaftNode) RunRaftNode() {
@@ -36,31 +39,48 @@ func (r *RaftNode) RunRaftNode() {
 }
 
 func (r *RaftNode) Close() {
+	if r.join {
+		r.unregist() // may consider to unregistr ?
+		time.Sleep(time.Duration(r.wt) * time.Second)
+	}
 	close(r.proc)  // prposeC
 	close(r.confc) // confChangeC
-	// r.unregist() // may consider to unregistr ?
 }
 
-func InitRaftNode(id int, kvport int, clusters []string, join bool) *RaftNode {
+func InitRaftNode(id int, kvport int, clusters []string, join bool, leaderaddr string, wt int) *RaftNode {
 	return &RaftNode{
-		id:       id,
-		kvport:   kvport,
-		clusters: clusters,
-		join:     join,
-		proc:     make(chan string),
-		confc:    make(chan raftpb.ConfChange),
+		id:         id,
+		kvport:     kvport,
+		clusters:   clusters,
+		join:       join,
+		proc:       make(chan string),
+		confc:      make(chan raftpb.ConfChange),
+		leaderaddr: leaderaddr,
+		wt:         wt,
 	}
 }
 
 func (r *RaftNode) regist() {
 	peeradrr := r.clusters[len(r.clusters)-1]
 	body := strings.NewReader(peeradrr)
-	req, err := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:12380/%d", r.id), body)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%v/%d", r.leaderaddr, r.id), body)
 	if err != nil {
 		panic(err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+}
+
+func (r *RaftNode) unregist() {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%v/%d", r.leaderaddr, r.id), nil)
+	if err != nil {
+		panic(err)
+	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		panic(err)
