@@ -16,7 +16,7 @@ type ImpNode interface {
 	ReturnNodeInfo(int) (*Node, error)
 }
 
-var nodeTable = "node_table"
+var nodeTable = "nodes"
 
 func (n *Node) TableName() string {
 	return nodeTable

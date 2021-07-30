@@ -2,11 +2,14 @@ package main
 
 import (
 	"flag"
-	"strings"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
+	"go-third-party/raft-apps/app/conf"
 	"go-third-party/raft-apps/app/db"
-
-	"go.etcd.io/etcd/raft/v3/raftpb"
+	"go-third-party/raft-apps/app/raft"
 )
 
 /*
@@ -16,85 +19,104 @@ import (
 4. else return `id` as the started node `id`
 */
 
-func InitDB() (db.OPDB, error) {
-	mysqlAddr := "mysql"
-	mysqlPort := "3306"
-	mysqlOpDB := "raft"
-	mysqlUsr := "raft"
-	mysqUsrPwd := "raft"
+var (
+	path         = flag.String("config", "./conf/app.dev.ini", "config location")
+	checkcommit  = flag.Bool("version", false, "burry code for check version")
+	gitcommitnum string
+)
 
-	return db.NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr).NewDBConnection()
+func checkComimit() {
+	fmt.Println(gitcommitnum)
 }
 
-func InitNodeConfig() (int, int, string, bool) {
-	id := flag.Int("id", 0, "node ID") // 主要用於 recover status
-
-	// 對於初次註冊的節點，需要帶入一些參數
-	// TODO: 給予系統話參數，或設定檔考慮 e.g. randomPort
-	port := flag.Int("port", 0, "key-value server port")
-	addr := flag.String("addr", "http://127.0.0.1:12379", "used for peer-connection  port")
-	join := flag.Bool("join", false, "join an existing cluster")
+func Init() error {
 	flag.Parse()
+	join := false
 
-	db, err := InitDB()
+	// if there is a needed to check git commit num ... print it out
+	if *checkcommit {
+		checkComimit()
+		os.Exit(1)
+	}
+
+	// read config and pass variables ...
+	cfg, err := conf.InitConfig(*path)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	if *id == 0 {
-		// 自動加入新節點
-		aid, err := db.InsertDbRecord(*port, *addr)
-		if err != nil {
-			panic(err)
-		}
-		*id = aid
-
-	}
-
-	if *port == 0 {
-		nodeInfo, err := db.ReturnNodeInfo(*id)
-		if err != nil {
-			panic(err)
-		}
-		*port = nodeInfo.Port
-	}
-
-	clusters, err := db.GetClusterIps()
+	opdb, err := db.NewDBConfiguration(cfg.DbUser, cfg.DbPassword, "mysql", cfg.DbName, cfg.DbPort, cfg.DbHost).NewDBConnection()
 	if err != nil {
-		panic(err)
+		return err
+	}
+
+	if cfg.ID == 0 {
+		aid, err := opdb.InsertDbRecord(cfg.HttpPort, cfg.PeerAddr)
+		if err != nil {
+			return err
+		}
+		cfg.ID = aid
+
+	} else {
+		node, err := opdb.ReturnNodeInfo(cfg.ID)
+		if err != nil {
+			return err
+		}
+		cfg.HttpPort = node.Port
+		cfg.PeerAddr = node.Addr
+	}
+
+	if cfg.HttpPort == 0 {
+		return fmt.Errorf("no http port was provided!")
+	}
+
+	if cfg.PeerAddr == "" {
+		return fmt.Errorf("no peer addr was provided!")
+	}
+
+	clusters, err := opdb.GetClusterIps()
+	if err != nil {
+		return err
 	}
 
 	if len(clusters) > 1 {
-		*join = true
+		join = true
 	}
-	ips := strings.Join(clusters, ",")
 
-	return *id, *port, ips, *join
+	rft := raft.InitRaftNode(cfg.ID, cfg.HttpPort, clusters, join)
+	rft.RunRaftNode()
+
+	return nil
 }
 
 func main() {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("panic err: ", err)
+		}
+	}()
 
-	id, kvport, cluster, join := InitNodeConfig()
-
-	proposeC := make(chan string)
-	defer close(proposeC)
-	confChangeC := make(chan raftpb.ConfChange)
-	defer close(confChangeC)
-
-	var kvs *kvstore
-	getSnapshot := func() ([]byte, error) { return kvs.getSnapshot() }
-	clusters := strings.Split(cluster, ",")
-
-	// id 使用 uint 應該沒問題，要修改 newRaftNode
-	commitC, errorC, snapshotterReady := newRaftNode(id, clusters, join, getSnapshot, proposeC, confChangeC)
-
-	kvs = newKVStore(<-snapshotterReady, proposeC, commitC, errorC)
-
-	// the key-value http handler will propose updates to raft
-	serveHttpKVAPI(kvs, kvport, confChangeC, errorC)
-	// handler.addNode()
-	for {
-
+	err := Init()
+	if err != nil {
+		panic(err)
 	}
 
+	gracefulShutdown()
+}
+
+// gracefulShutdown: handle the worker connection
+func gracefulShutdown() {
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		sig := <-sigs
+		fmt.Println()
+		fmt.Println(sig)
+		done <- true
+	}()
+
+	<-done
 }
