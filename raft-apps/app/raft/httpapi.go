@@ -1,7 +1,6 @@
 package raft
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -45,8 +44,6 @@ func (h *httpKVAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	case http.MethodPost:
 		url, err := ioutil.ReadAll(r.Body)
-		fmt.Println("=======================: ", string(url))
-		fmt.Println("=======================: ", url)
 		if err != nil {
 			log.Printf("Failed to read on POST (%v)\n", err)
 			http.Error(w, "Failed on POST", http.StatusBadRequest)

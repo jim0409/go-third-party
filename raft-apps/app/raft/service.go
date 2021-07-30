@@ -53,18 +53,8 @@ func InitRaftNode(id int, kvport int, clusters []string, join bool) *RaftNode {
 }
 
 func (r *RaftNode) regist() {
-	// params := url.Values{}
-	// params.Add("http://127.0.0.1:22379", "")
-	// body := strings.NewReader(params.Encode())
 	peeradrr := r.clusters[len(r.clusters)-1]
-	// fmt.Println("----- peer addr --------- ", peeradrr)
-	// body := strings.NewReader("http://127.0.0.1:22379")
 	body := strings.NewReader(peeradrr)
-	// fmt.Println("----- boody --------- ", body)
-
-	// url := fmt.Sprintf("%v/%d", r.clusters[0], r.id)
-	// req, err := http.NewRequest("POST", url, body)
-	// req, err := http.NewRequest("POST", "http://127.0.0.1:12380/2", body)
 	req, err := http.NewRequest("POST", fmt.Sprintf("http://127.0.0.1:12380/%d", r.id), body)
 	if err != nil {
 		panic(err)
