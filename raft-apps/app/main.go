@@ -20,6 +20,7 @@ import (
 */
 
 var (
+	raftnode     *raft.RaftNode
 	path         = flag.String("config", "./conf/app.dev.ini", "config location")
 	checkcommit  = flag.Bool("version", false, "burry code for check version")
 	gitcommitnum string
@@ -83,8 +84,7 @@ func Init() error {
 		join = true
 	}
 
-	rft := raft.InitRaftNode(cfg.ID, cfg.HttpPort, clusters, join)
-	rft.RunRaftNode()
+	raftnode = raft.InitRaftNode(cfg.ID, cfg.HttpPort, clusters, join)
 
 	return nil
 }
@@ -100,6 +100,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	raftnode.RunRaftNode()
+	defer raftnode.Close()
 
 	gracefulShutdown()
 }
