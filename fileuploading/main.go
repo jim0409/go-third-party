@@ -31,7 +31,7 @@ func uploadFile(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("File Size: %+v\n", handler.Size)
 		fmt.Printf("MIME Header: %+v\n", handler.Header)
 		// 3. write temporary file on our server
-		tempFile, err := ioutil.TempFile("images", "upload-*.png")
+		tempFile, err := ioutil.TempFile("files", "upload-*.csv")
 		if err != nil {
 			fmt.Println(err)
 		}
