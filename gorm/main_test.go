@@ -84,3 +84,33 @@ func TestNewDBOperation(t *testing.T) {
 	assert.Error(t, err)
 
 }
+
+func BenchmarkCreate(b *testing.B) {
+
+	mysqlAddr := "127.0.0.1"
+	mysqlPort := "3306"
+	mysqlOpDB := "testdb"
+	mysqlUsr := "jim"
+	mysqUsrPwd := "password"
+
+	newDB := NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
+	db, err := newDB.NewDBConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	dt := &DemoTable{
+		Name:  "jim",
+		Email: "email@example.com",
+	}
+
+	for i := 0; i < b.N; i++ {
+		if err := db.create(dt.Name, dt.Email); err != nil {
+			panic(err)
+		}
+	}
+
+}

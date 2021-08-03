@@ -45,6 +45,15 @@ func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
 		}
 	}
 
+	d, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	// 設定連線池，預設最大連線 100 條，閒置 50 條
+	d.SetMaxOpenConns(50)
+	d.SetMaxIdleConns(50)
+
 	err = db.AutoMigrate(
 		&DemoTable{},
 		&BankUsr{},

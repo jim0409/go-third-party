@@ -19,7 +19,8 @@ type tbMethod interface {
 // Our DemoTable Struct
 type DemoTable struct {
 	gorm.Model
-	Name  string `gorm:"primary_key;unique"`
+	// Name  string `gorm:"primary_key;unique"`
+	Name  string
 	Email string
 }
 
