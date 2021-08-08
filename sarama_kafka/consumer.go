@@ -42,6 +42,8 @@ func main() {
 	}
 
 	broker := os.Args[1]
+	brokers := []string{broker}
+	// brokers = []string{"127.0.0.1:9091", "127.0.0.1:9092", "127.0.0.1:9093"}
 	group := os.Args[2]
 	topics := os.Args[3:]
 
@@ -57,12 +59,12 @@ func main() {
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	client, err := sarama.NewConsumerGroup([]string{broker}, group, config)
+	client, err := sarama.NewConsumerGroup(brokers, group, config)
 	if err != nil {
 		log.Panicf("Error creating consumer group client: %v", err)
 	}
 
-	cmer, err := sarama.NewConsumer([]string{broker}, config)
+	cmer, err := sarama.NewConsumer(brokers, config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,8 +74,8 @@ func main() {
 		wg.Add(1)
 		defer wg.Done()
 		for {
-			// partcon, err := cmer.ConsumePartition(topics[0], 0, sarama.OffsetNewest)
-			partcon, err := cmer.ConsumePartition(topics[0], 0, 116)
+			partcon, err := cmer.ConsumePartition(topics[0], 0, sarama.OffsetNewest)
+			// partcon, err := cmer.ConsumePartition(topics[0], 0, 116) // 可以透過修改 off set 取得指定偏移量的值
 			fmt.Println("err", err)
 			ccc := <-partcon.Messages()
 			fmt.Println("key ", string(ccc.Key), "value ", string(ccc.Value), "ofset ", int(ccc.Offset))

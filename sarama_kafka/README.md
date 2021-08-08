@@ -6,7 +6,7 @@
 > go run producer.go localhost:9092 sarama
 
 3. 啟動consumer.go來消費線上的kafka topic
-> go run consumer.go localhost:9092 1 sarama
+> go run consumer.go localhost:9092 test sarama
 
 # refer:
 - https://github.com/Shopify/sarama
