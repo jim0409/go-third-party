@@ -22,6 +22,28 @@ type Operation struct {
 	DB *gorm.DB
 }
 
+type ManagerDB interface {
+	RetriveShards() ([]ShardInfo, error)
+	migrate(...interface{}) error
+	MockShards()
+}
+
+func (dbc *DBConfig) NewDBMainConnection() (ManagerDB, error) {
+	db, err := gorm.Open(mysql.Open(dbc.DBUri), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	if os.Getenv("DEBUG") != "false" {
+		err = db.Migrator().DropTable()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &Operation{DB: db}, err
+}
+
 type OPDB interface {
 	Closed() error
 	Debug()
