@@ -1,6 +1,7 @@
 package main
 
 import (
+	dbpkg "go-third-party/gorm"
 	"log"
 )
 
@@ -23,7 +24,7 @@ func main() {
 	mysqlUsr := "jim"
 	mysqUsrPwd := "password"
 
-	newDB := NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
+	newDB := dbpkg.NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
 	db, err := newDB.NewDBConnection()
 	if err != nil {
 		log.Fatal(err)
@@ -39,22 +40,22 @@ func main() {
 		}
 	}()
 
-	if err = db.create("jim", "test-mail"); err != nil {
+	if err = db.Create("jim", "test-mail"); err != nil {
 		log.Printf("Error happend while creating records %s\n", err)
 	}
 
-	str, err := db.queryWithName("jim")
+	str, err := db.QueryWithName("jim")
 	if err != nil {
 		log.Printf("Error happend while querying %s\n", err)
 	}
 	log.Printf("name %v\n", str)
 
-	err = db.updateEmail("jim", "an-test-email")
+	err = db.UpdateEmail("jim", "an-test-email")
 	if err != nil {
 		log.Printf("Error happend while updating email %s\n", err)
 	}
 
-	str, err = db.queryWithName("jim")
+	str, err = db.QueryWithName("jim")
 	if err != nil {
 		log.Printf("Error happend while querying %s\n", err)
 	}

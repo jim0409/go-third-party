@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	dbpkg "go-third-party/gorm"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,11 +13,12 @@ func main() {
 
 	mysqlAddr := "127.0.0.1"
 	mysqlPort := "3306"
-	mysqlOpDB := "testdb"
-	mysqlUsr := "jim"
-	mysqUsrPwd := "password"
+	mysqlOpDB := "mysql"
+	mysqlUsr := "root"
+	// mysqUsrPwd := "1qaz!QAZ"
+	mysqUsrPwd := "secret"
 
-	newDB := NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
+	newDB := dbpkg.NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
 	db, err := newDB.NewDBConnection()
 	if err != nil {
 		log.Fatal(err)
@@ -28,15 +31,17 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/insert", func(c *gin.Context) {
-		db.create("jim", "mail")
+		db.Create("jim", "mail")
 		c.JSON(200, "ok")
 	})
 
 	httpSrv := &http.Server{
-		Addr:    ":80",
+		Addr:    ":8001",
 		Handler: router,
 	}
 
-	httpSrv.ListenAndServe()
+	if err := httpSrv.ListenAndServe(); err != nil {
+		panic(err)
+	}
 
 }

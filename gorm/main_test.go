@@ -1,4 +1,4 @@
-package main
+package dbpkg
 
 import (
 	"log"
@@ -63,23 +63,23 @@ func TestNewDBOperation(t *testing.T) {
 
 	opdb.Debug()
 
-	err = opdb.create(dt.Name, dt.Email)
+	err = opdb.Create(dt.Name, dt.Email)
 	assert.Nil(t, err)
 
-	resStr, err := opdb.queryWithName(dt.Name)
+	resStr, err := opdb.QueryWithName(dt.Name)
 	assert.Equal(t, dt.Email, resStr)
 	assert.Nil(t, err)
 
-	err = opdb.updateEmail(dt.Name, update_email)
+	err = opdb.UpdateEmail(dt.Name, update_email)
 	assert.Nil(t, err)
 
-	resStr, err = opdb.queryWithName(dt.Name)
+	resStr, err = opdb.QueryWithName(dt.Name)
 	assert.Equal(t, update_email, resStr)
 
-	err = opdb.deleteData(dt.Name, update_email)
+	err = opdb.DeleteData(dt.Name, update_email)
 	assert.Nil(t, err)
 
-	resStr, err = opdb.queryWithName(dt.Name)
+	resStr, err = opdb.QueryWithName(dt.Name)
 	assert.Equal(t, "Can't find the email with jim", resStr)
 	assert.Error(t, err)
 
@@ -108,7 +108,7 @@ func BenchmarkCreate(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		if err := db.create(dt.Name, dt.Email); err != nil {
+		if err := db.Create(dt.Name, dt.Email); err != nil {
 			panic(err)
 		}
 	}
