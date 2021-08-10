@@ -1,5 +1,9 @@
 package main
 
+import (
+	"go-third-party/gorm/multi-databases/models"
+)
+
 var (
 	usr    = "jim"
 	pwd    = "password"
@@ -10,8 +14,7 @@ var (
 )
 
 func main() {
-	m := InitMainDB(usr, pwd, dbt, dbname, port, addr)
-	m.StartShardDbs()
+	m := models.InitMainDB(usr, pwd, dbt, dbname, port, addr)
 	if err := m.CreateMessage("msg-1", "jim1", "31"); err != nil {
 		panic(err)
 	}

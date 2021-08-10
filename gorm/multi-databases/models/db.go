@@ -1,8 +1,7 @@
-package main
+package models
 
 import (
 	"fmt"
-	"os"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -22,28 +21,23 @@ type Operation struct {
 	DB *gorm.DB
 }
 
+// --------- for manager db implement methods
 type ManagerDB interface {
-	RetriveShards() ([]ShardInfo, error)
+	RetriveNodes() ([]NodeInfo, error)
+
 	migrate(...interface{}) error
-	MockShards()
 }
 
-func (dbc *DBConfig) NewDBMainConnection() (ManagerDB, error) {
+func (dbc *DBConfig) NewMainDBConnection() (ManagerDB, error) {
 	db, err := gorm.Open(mysql.Open(dbc.DBUri), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	if os.Getenv("DEBUG") != "false" {
-		err = db.Migrator().DropTable()
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return &Operation{DB: db}, err
 }
 
+// ----------- for shards db implement methods
 type OPDB interface {
 	Closed() error
 	Debug()
@@ -57,13 +51,6 @@ func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
 	db, err := gorm.Open(mysql.Open(dbc.DBUri), &gorm.Config{})
 	if err != nil {
 		return nil, err
-	}
-
-	if os.Getenv("DEBUG") != "false" {
-		err = db.Migrator().DropTable()
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	return &Operation{DB: db}, err

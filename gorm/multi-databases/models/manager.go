@@ -1,8 +1,7 @@
-package main
+package models
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
@@ -24,8 +23,8 @@ type GroupInDB struct {
 	ShardID string
 }
 
-// 紀錄 Shards DB 的資訊
-type ShardInfo struct {
+// 紀錄 Node DB 的資訊
+type NodeInfo struct {
 	gorm.Model
 	User     string
 	Password string
@@ -37,84 +36,48 @@ type ShardInfo struct {
 
 type MainDb struct {
 	DB      ManagerDB      // 主配置，紀錄 shard dbs 的配置，及動態增加 shards
-	ShardDb []OPDB         // 紀錄 shard dbs 的實例
+	NodeDBs []OPDB         // 紀錄 shard dbs 的實例
 	TabeLoc map[string]int // 反查回 shard db 的位置
 }
 
-func (db *Operation) RetriveShards() ([]ShardInfo, error) {
-	shards := []ShardInfo{}
-	if err := db.DB.Table("shard_infos").Select("*").Scan(&shards).Error; err != nil {
+func (db *Operation) RetriveNodes() ([]NodeInfo, error) {
+	nodes := []NodeInfo{}
+	if err := db.DB.Table("node_infos").Select("*").Scan(&nodes).Error; err != nil {
 		return nil, err
 	}
-	return shards, nil
+	return nodes, nil
 }
 
 func InitMainDB(usr, pwd, tpe, name, port, addr string) DBManager {
-	mamindb := NewDBConfiguration(usr, pwd, tpe, name, port, addr)
-	mdb, err := mamindb.NewDBMainConnection()
-	if err != nil {
-		panic(err)
-	}
-	err = mdb.migrate(&GroupInDB{}, &ShardInfo{})
+	dbc := NewDBConfiguration(usr, pwd, tpe, name, port, addr)
+	mdb, err := dbc.NewMainDBConnection()
 	if err != nil {
 		panic(err)
 	}
 
-	return &MainDb{
+	err = mdb.migrate(&GroupInDB{}, &NodeInfo{})
+	if err != nil {
+		panic(err)
+	}
+
+	maindb := &MainDb{
 		DB:      mdb,
-		ShardDb: make([]OPDB, 0),
+		NodeDBs: make([]OPDB, 0),
 		TabeLoc: make(map[string]int),
 	}
-}
 
-func (db *Operation) MockShards() {
-	dbs := []ShardInfo{
-		ShardInfo{
-			User:     "jim",
-			Password: "password",
-			Type:     "mysql",
-			Database: "message",
-			Port:     "3301",
-			Address:  "127.0.0.1",
-		},
-		ShardInfo{
-			User:     "jim",
-			Password: "password",
-			Type:     "mysql",
-			Database: "message",
-			Port:     "3302",
-			Address:  "127.0.0.1",
-		},
-		ShardInfo{
-			User:     "jim",
-			Password: "password",
-			Type:     "mysql",
-			Database: "message",
-			Port:     "3303",
-			Address:  "127.0.0.1",
-		},
-	}
+	defer maindb.InitNodes()
 
-	if err := db.DB.Create(dbs).Error; err != nil {
-		fmt.Println(err)
-	}
+	return maindb
 }
 
 /*
 TODO:
-	改成 query main db 下的 ShardInfo 表
 	考慮是否要定期做排查? 以及增加程序內部緩存?
 */
-func (m *MainDb) retriveDBs() ([]ShardInfo, error) {
-	if os.Getenv("mock") == "true" {
-		m.DB.MockShards()
-	}
-	return m.DB.RetriveShards()
-}
-
-func (m *MainDb) StartShardDbs() {
+func (m *MainDb) InitNodes() {
 	var dbs []OPDB
-	cfgs, err := m.retriveDBs()
+	cfgs, err := m.DB.RetriveNodes()
 	if err != nil {
 		panic(err)
 	}
@@ -128,11 +91,11 @@ func (m *MainDb) StartShardDbs() {
 		dbs = append(dbs, db)
 	}
 
-	m.ShardDb = dbs
+	m.NodeDBs = dbs
 }
 
 type DBManager interface {
-	StartShardDbs()
+	InitNodes()
 
 	DBWriter
 	DBReader
@@ -149,13 +112,12 @@ type DBReader interface {
 // TODO: 製作決策器 .. 要下決策決定他是去哪一個 shard
 func dbDecision(group string) (int, error) {
 	id := strings.Split(group, "-")[1]
-	// return group_id
 	return strconv.Atoi(id)
 }
 
 func (o *MainDb) dbSelect(group string) OPDB {
 	if t, ok := o.TabeLoc[group]; ok {
-		return o.ShardDb[t]
+		return o.NodeDBs[t]
 	}
 
 	loc, err := dbDecision(group)
@@ -164,11 +126,11 @@ func (o *MainDb) dbSelect(group string) OPDB {
 	}
 
 	o.TabeLoc[group] = loc
-	if err := o.ShardDb[loc].createGroupMsgTabel(group); err != nil {
+	if err := o.NodeDBs[loc].createGroupMsgTabel(group); err != nil {
 		panic(err)
 	}
 
-	return o.ShardDb[loc]
+	return o.NodeDBs[loc]
 }
 
 func (o *MainDb) CreateMessage(group string, name string, age string) error {
