@@ -1,7 +1,6 @@
 package models
 
 import (
-	"os"
 	"testing"
 
 	"gorm.io/driver/mysql"
@@ -9,12 +8,12 @@ import (
 )
 
 func InitConnection() *DBConfig {
-	return NewDBConfiguration("jim", "password", "mysql", "db", "3306", "127.0.0.1")
+	// return NewDBConfiguration("jim", "password", "mysql", "db", "3306", "127.0.0.1")
+	return NewDBConfiguration("jim", "password", "mysql", "db", "3306", "10.200.6.99")
 }
 func TestDropData(t *testing.T) {
 	dbc := InitConnection()
-	err := DropTable(dbc)
-	if err != nil {
+	if err := DropTable(dbc); err != nil {
 		panic(err)
 	}
 }
@@ -24,19 +23,12 @@ func DropTable(dbc *DBConfig) error {
 	if err != nil {
 		return err
 	}
-	if os.Getenv("DEBUG") != "false" {
-		err = db.Migrator().DropTable(&NodeInfo{}, &GroupInDB{})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return db.Migrator().DropTable(&NodeInfo{}, &GroupInDB{})
 }
 
 func TestMockData(t *testing.T) {
 	dbc := InitConnection()
-	err := MockNodesInfo(dbc)
-	if err != nil {
+	if err := MockNodesInfo(dbc); err != nil {
 		panic(err)
 	}
 }

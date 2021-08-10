@@ -22,17 +22,27 @@ type Operation struct {
 }
 
 // --------- for manager db implement methods
-type ManagerDB interface {
+type MainDB interface {
+	Closed() error
 	RetriveNodes() ([]NodeInfo, error)
 
 	migrate(...interface{}) error
 }
 
-func (dbc *DBConfig) NewMainDBConnection() (ManagerDB, error) {
+func (dbc *DBConfig) NewMainDBConnection() (MainDB, error) {
 	db, err := gorm.Open(mysql.Open(dbc.DBUri), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
+
+	d, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: 拉出來，放到設定檔做設定
+	d.SetMaxOpenConns(200)
+	d.SetMaxIdleConns(50)
 
 	return &Operation{DB: db}, err
 }
@@ -52,6 +62,15 @@ func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	d, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: 拉出來，放到設定檔做設定
+	d.SetMaxOpenConns(200)
+	d.SetMaxIdleConns(50)
 
 	return &Operation{DB: db}, err
 }

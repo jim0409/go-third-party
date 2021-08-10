@@ -1,7 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"go-third-party/gorm/multi-databases/models"
+	"math/rand"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -13,15 +18,41 @@ var (
 	addr   = "127.0.0.1"
 )
 
+// 應該跟 DB 決策器綁定一起，透過決策器回饋的數字。產生出對應的值
+var rGen = func() (int, string, string, string) {
+	id := rand.Intn(3)
+	group := fmt.Sprintf("msg-%d", id)
+	name := fmt.Sprintf("jim_%d", id)
+	age := fmt.Sprintf("3%d", id)
+	return id, group, name, age
+}
+
 func main() {
 	m := models.InitMainDB(usr, pwd, dbt, dbname, port, addr)
-	if err := m.CreateMessage("msg-1", "jim1", "31"); err != nil {
-		panic(err)
+	defer func() {
+		if err := m.Closed(); err != nil {
+			panic(err)
+		}
+	}()
+
+	router := gin.Default()
+	router.GET("/insert", func(c *gin.Context) {
+		i, g, n, a := rGen()
+		if err := m.CreateMessage(g, n, a); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"id":     fmt.Sprintf("%d", i),
+			"status": "ok",
+		})
+	})
+
+	httpSrv := &http.Server{
+		Addr:    ":8001",
+		Handler: router,
 	}
-	if err := m.CreateMessage("msg-2", "jim2", "32"); err != nil {
-		panic(err)
-	}
-	if err := m.CreateMessage("msg-0", "jim0", "30"); err != nil {
+
+	if err := httpSrv.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }

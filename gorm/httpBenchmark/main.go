@@ -32,7 +32,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/insert", func(c *gin.Context) {
 		db.Create("jim", "mail")
-		c.JSON(200, "ok")
+		c.JSON(http.StatusOK, "ok")
 	})
 
 	httpSrv := &http.Server{

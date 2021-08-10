@@ -16,11 +16,11 @@ var (
 )
 */
 
-// 紀錄 Group 在哪一個 Shard DB 上
+// 紀錄 Group 在哪一個 Node DB 上
 type GroupInDB struct {
 	gorm.Model
 	GroupID string
-	ShardID string
+	NodeID  string
 }
 
 // 紀錄 Node DB 的資訊
@@ -35,9 +35,9 @@ type NodeInfo struct {
 }
 
 type MainDb struct {
-	DB      ManagerDB      // 主配置，紀錄 shard dbs 的配置，及動態增加 shards
-	NodeDBs []OPDB         // 紀錄 shard dbs 的實例
-	TabeLoc map[string]int // 反查回 shard db 的位置
+	DB      MainDB         // 主配置，紀錄 node db 的配置，及動態增加 nodes
+	NodeDBs []OPDB         // 紀錄 node db 的實例
+	TabeLoc map[string]int // 反查回 table 對應的 node db
 }
 
 func (db *Operation) RetriveNodes() ([]NodeInfo, error) {
@@ -66,16 +66,28 @@ func InitMainDB(usr, pwd, tpe, name, port, addr string) DBManager {
 		TabeLoc: make(map[string]int),
 	}
 
-	defer maindb.InitNodes()
+	defer maindb.UpdateNodes()
 
 	return maindb
 }
 
-/*
-TODO:
-	考慮是否要定期做排查? 以及增加程序內部緩存?
-*/
-func (m *MainDb) InitNodes() {
+func (m *MainDb) Closed() error {
+	// 要先關閉主要 DB 再關閉節點 DB，避免重複建表
+	if err := m.DB.Closed(); err != nil {
+		return err
+	}
+
+	for _, n := range m.NodeDBs {
+		if err := n.Closed(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// TODO:考慮是否要定期做排查? 以及增加程序內部緩存?
+func (m *MainDb) UpdateNodes() {
 	var dbs []OPDB
 	cfgs, err := m.DB.RetriveNodes()
 	if err != nil {
@@ -95,7 +107,8 @@ func (m *MainDb) InitNodes() {
 }
 
 type DBManager interface {
-	InitNodes()
+	UpdateNodes() // 提供更新 Nodes 資訊
+	Closed() error
 
 	DBWriter
 	DBReader
@@ -120,6 +133,7 @@ func (o *MainDb) dbSelect(group string) OPDB {
 		return o.NodeDBs[t]
 	}
 
+	// fmt.Printf("----- no cache with group .. %s -----\n", group)
 	loc, err := dbDecision(group)
 	if err != nil {
 		panic(err)
