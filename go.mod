@@ -13,6 +13,7 @@ require (
 	github.com/bluele/slack v0.0.0-20180528010058-b4b4d354a079
 	github.com/casbin/casbin/v2 v2.31.3
 	github.com/casbin/gorm-adapter/v3 v3.3.0
+	github.com/coreos/etcd v3.3.13+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/garyburd/redigo v1.6.2
 	github.com/gin-gonic/gin v1.7.2
