@@ -8,8 +8,7 @@ import (
 )
 
 func InitConnection() *DBConfig {
-	// return NewDBConfiguration("jim", "password", "mysql", "db", "3306", "127.0.0.1")
-	return NewDBConfiguration("jim", "password", "mysql", "db", "3306", "10.200.6.99")
+	return NewDBConfiguration("jim", "password", "mysql", "db", "3306", "127.0.0.1")
 }
 func TestDropData(t *testing.T) {
 	dbc := InitConnection()

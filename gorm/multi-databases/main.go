@@ -5,17 +5,19 @@ import (
 	"go-third-party/gorm/multi-databases/models"
 	"math/rand"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	usr    = "jim"
-	pwd    = "password"
-	dbt    = "mysql"
-	dbname = "db"
-	port   = "3306"
-	addr   = "127.0.0.1"
+	usr    = os.Args[1] // "jim"
+	pwd    = os.Args[2] // "password"
+	dbt    = os.Args[3] //"mysql"
+	dbname = os.Args[4] //"db"
+	port   = os.Args[5] // "3306"
+	addr   = os.Args[6] //"127.0.0.1"
+	// go run main.go jim password mysql db 3306 127.0.0.1
 )
 
 // 應該跟 DB 決策器綁定一起，透過決策器回饋的數字。產生出對應的值
