@@ -3,26 +3,18 @@ package main
 import (
 	dbpkg "go-third-party/gorm"
 	"log"
+	"os"
 )
 
 func main() {
-	// if len(os.Args) != 6 {
-	// 	log.Fprintf(os.Stderr, "Usage: %s <msyql-addr> <mysql-port> <mysql-operation-database> <mysql-user> <mysql-user-password>\n",
-	// 		os.Args[0])
-	// 	os.Exit(1)
-	// }
 
-	// mysqlAddr := os.Args[1]  // 127.0.0.1
-	// mysqlPort := os.Args[2]  // 3306
-	// mysqlOpDB := os.Args[3]  // mysql
-	// mysqlUsr := os.Args[4]   // root
-	// mysqUsrPwd := os.Args[5] // secret
+	// go run ./main.go 127.0.0.1 3306 mysql root secret
 
-	mysqlAddr := "127.0.0.1"
-	mysqlPort := "3306"
-	mysqlOpDB := "testdb"
-	mysqlUsr := "jim"
-	mysqUsrPwd := "password"
+	mysqlAddr := os.Args[1]  // 127.0.0.1
+	mysqlPort := os.Args[2]  // 3306
+	mysqlOpDB := os.Args[3]  // mysql
+	mysqlUsr := os.Args[4]   // root
+	mysqUsrPwd := os.Args[5] // secret
 
 	newDB := dbpkg.NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
 	db, err := newDB.NewDBConnection()
