@@ -42,11 +42,19 @@ func main() {
 		i, g, n, a := rGen()
 		if err := m.CreateMessage(g, n, a); err != nil {
 			c.JSON(http.StatusBadRequest, err)
+			return
 		}
 		c.JSON(http.StatusOK, gin.H{
 			"id":     fmt.Sprintf("%d", i),
 			"status": "ok",
 		})
+	})
+	router.GET("/purge", func(c *gin.Context) {
+		if err := m.PurgeCache(); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
+		c.JSON(http.StatusOK, "purge cache")
 	})
 
 	httpSrv := &http.Server{

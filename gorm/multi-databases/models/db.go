@@ -25,12 +25,16 @@ type Operation struct {
 type MainDB interface {
 	Closed() error
 	RetriveNodes() ([]NodeInfo, error)
+	AddNodeInfos([]NodeInfo) error
+	AddGroupInNodes(string, int) error
+	QueryGroupLoc(string) (int, error)
+	NodeStatic() (int, error)
 
 	migrate(...interface{}) error
 }
 
-func (dbc *DBConfig) NewMainDBConnection() (MainDB, error) {
-	db, err := gorm.Open(mysql.Open(dbc.DBUri), &gorm.Config{})
+func (c *DBConfig) NewMainDBConnection() (MainDB, error) {
+	db, err := gorm.Open(mysql.Open(c.DBUri), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -57,8 +61,8 @@ type OPDB interface {
 	GroupMessage
 }
 
-func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
-	db, err := gorm.Open(mysql.Open(dbc.DBUri), &gorm.Config{})
+func (c *DBConfig) NewDBConnection() (OPDB, error) {
+	db, err := gorm.Open(mysql.Open(c.DBUri), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -75,21 +79,21 @@ func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
 	return &Operation{DB: db}, err
 }
 
-func (db *Operation) migrate(tb ...interface{}) error {
-	return db.DB.AutoMigrate(tb...)
+func (o *Operation) migrate(tb ...interface{}) error {
+	return o.DB.AutoMigrate(tb...)
 }
 
-func (db *Operation) Closed() error {
-	d, err := db.DB.DB()
+func (o *Operation) Closed() error {
+	db, err := o.DB.DB()
 	if err != nil {
 		return err
 	}
-	return d.Close()
+	return db.Close()
 }
 
 // 透過使用Debug()可以轉譯語言為SQL語法
-func (db *Operation) Debug() {
-	db.DB = db.DB.Debug()
+func (o *Operation) Debug() {
+	o.DB = o.DB.Debug()
 }
 
 func NewDBConfiguration(user, password string, dbtype string, dbname, dbport string, address string) *DBConfig {
