@@ -173,7 +173,7 @@ type DBWriter interface {
 }
 
 type DBReader interface {
-	ReadMessage(string, string, string) error
+	ReadMessage(string, []string) ([]map[string]interface{}, error)
 }
 
 type DBBroker interface {
@@ -201,13 +201,7 @@ func (m *MainDb) locDecide(group string) (int, error) {
 	}
 
 	// 假設錯誤是 node_id not found
-	// if nid == -1 && err == nil {
-	// 	m.SettingDB.AddGroupInNodes(groupID, )
-	// }
 	return m.SettingDB.NodeStatic()
-
-	// id := strings.Split(group, "-")[1]
-	// return strconv.Atoi(id)
 }
 
 func (m *MainDb) dbSelect(group string) (OPDB, error) {
@@ -240,6 +234,10 @@ func (m *MainDb) CreateMessage(group string, name string, age string) error {
 	return db.InsertRecrods(group, name, age)
 }
 
-func (m *MainDb) ReadMessage(group string, name string, age string) error {
-	return nil
+func (m *MainDb) ReadMessage(group string, option []string) ([]map[string]interface{}, error) {
+	db, err := m.dbSelect(group)
+	if err != nil {
+		return nil, err
+	}
+	return db.QueryTable(group, option)
 }

@@ -1,6 +1,11 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"strings"
+
+	"github.com/fatih/structs"
+	"gorm.io/gorm"
+)
 
 type MessageTable struct {
 	gorm.Model
@@ -28,6 +33,7 @@ type MessageTable struct {
 type GroupMessage interface {
 	createGroupMsgTabel(string) error
 	InsertRecrods(string, string, string) error
+	QueryTable(string, []string) ([]map[string]interface{}, error)
 }
 
 func (o *Operation) createGroupMsgTabel(tbname string) error {
@@ -36,4 +42,25 @@ func (o *Operation) createGroupMsgTabel(tbname string) error {
 
 func (o *Operation) InsertRecrods(tbname, name string, age string) error {
 	return o.DB.Table(tbname).Create(&MessageTable{Name: name, Age: age}).Error
+}
+
+// QueryRecord( group string, filter []string})
+func (o *Operation) QueryTable(tbname string, filter []string) ([]map[string]interface{}, error) {
+	var records []MessageTable
+	var filters = "*"
+
+	if filter != nil {
+		filters = strings.Join(filter, ",")
+	}
+
+	if err := o.DB.Table(tbname).Select(filters).Scan(&records).Error; err != nil {
+		return nil, err
+	}
+
+	res := make([]map[string]interface{}, len(records))
+	for i, v := range records {
+		res[i] = structs.Map(v)
+	}
+
+	return res, nil
 }

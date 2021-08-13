@@ -38,6 +38,14 @@ func main() {
 	}()
 
 	router := gin.Default()
+	router.GET("/purge", func(c *gin.Context) {
+		if err := m.PurgeCache(); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return
+		}
+		c.JSON(http.StatusOK, "purge cache")
+	})
+
 	router.GET("/insert", func(c *gin.Context) {
 		i, g, n, a := rGen()
 		if err := m.CreateMessage(g, n, a); err != nil {
@@ -49,12 +57,17 @@ func main() {
 			"status": "ok",
 		})
 	})
-	router.GET("/purge", func(c *gin.Context) {
-		if err := m.PurgeCache(); err != nil {
+
+	router.GET("/read", func(c *gin.Context) {
+		_, g, _, _ := rGen()
+		res, err := m.ReadMessage(g, nil)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
 			return
 		}
-		c.JSON(http.StatusOK, "purge cache")
+		c.JSON(http.StatusOK, gin.H{
+			"result": res,
+		})
 	})
 
 	httpSrv := &http.Server{
