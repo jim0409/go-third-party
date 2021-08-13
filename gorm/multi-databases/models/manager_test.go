@@ -119,3 +119,11 @@ func testNodeStatic(t *testing.T) {
 	}
 	assert.Equal(t, loc, 3)
 }
+
+func TestCreateMessage(t *testing.T) {
+
+}
+
+func TestReadMessage(t *testing.T) {
+
+}

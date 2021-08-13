@@ -1,0 +1,49 @@
+@startuml
+
+title CreateMessage
+
+skinparam ParticipantPadding 80
+skinparam BoxPadding 10
+
+participant "ClientRequest" as UsrMsg #APPLICATION
+
+box "DBManager" #C7D7D8
+participant "CreateMessage" as DBWriter #BUSINESS
+participant "DbLocDecide" as DBBroker #BUSINESS
+end box
+
+box "MySQL-main/nodes" #C7D7D8
+participant "MySQL(s)" as Dbs #BUSINESS
+end box
+
+autonumber "0."
+
+UsrMsg -> DBWriter : [Request]\n messages within GroupID
+activate UsrMsg #F5DDAD
+
+activate DBWriter #F5DDAD
+DBWriter -> DBBroker : [loc]\nAsk for group table location
+
+
+activate DBBroker #F5DDAD
+DBBroker --> Dbs : [str:groupId]\nQuery GroupInDB for nodes loc
+note right of DBBroker
+# query for loc,
+if local cache hit
+  > return loc
+else
+  > query/insert db for group(s) loc
+end note
+DBBroker <-- Dbs : [db:GroupInDB]\nReturn NodeDB Id as loc
+
+DBWriter <- DBBroker : [NodeID[loc]]\nReturn target NodeID for insert
+deactivate DBBroker
+
+DBWriter <--> Dbs : [Insert]\nInsert Message into NodeDbs[loc]
+
+DBWriter -> UsrMsg : [Response]\nResult
+deactivate DBWriter
+
+deactivate UsrMsg
+
+@enduml

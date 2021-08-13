@@ -15,6 +15,7 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.3.0
 	github.com/coreos/etcd v3.3.13+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/fatih/structs v1.1.0
 	github.com/garyburd/redigo v1.6.2
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-ini/ini v1.62.0

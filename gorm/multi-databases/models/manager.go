@@ -156,7 +156,6 @@ func (m *MainDb) UpdateNodes() {
 	}
 
 	m.NodeDBs = dbs
-	fmt.Println(m.NodeDBs)
 }
 
 type DBManager interface {
