@@ -1,38 +1,10 @@
 package main
 
 import (
-	"path/filepath"
 	"testing"
 
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
-
-const (
-	logRoot     = "service.log"
-	mysqlRoot   = "service.mysql"
-	serviceRoot = "service.service"
-)
-
-type Configs struct {
-	config *viper.Viper
-}
-
-func (c *Configs) loadConfig(path string) {
-	c.config = viper.New()
-
-	abs, err := filepath.Abs(path)
-	if err != nil {
-		panic(err)
-	}
-
-	c.config.SetConfigFile(abs)
-	if err := c.config.ReadInConfig(); err != nil {
-		panic(err)
-	}
-
-	c.config.AllSettings()
-}
 
 func TestLoadConfig(t *testing.T) {
 	configPath := "./config.yaml"
