@@ -33,7 +33,7 @@ type MessageTable struct {
 type GroupMessage interface {
 	createGroupMsgTabel(string) error
 	InsertRecrods(string, string, string) error
-	QueryTable(string, []string) ([]map[string]interface{}, error)
+	QueryTable(string, []string, int, int) ([]map[string]interface{}, error)
 }
 
 func (o *Operation) createGroupMsgTabel(tbname string) error {
@@ -45,7 +45,7 @@ func (o *Operation) InsertRecrods(tbname, name string, age string) error {
 }
 
 // QueryRecord( group string, filter []string})
-func (o *Operation) QueryTable(tbname string, filter []string) ([]map[string]interface{}, error) {
+func (o *Operation) QueryTable(tbname string, filter []string, limit int, offset int) ([]map[string]interface{}, error) {
 	var records []MessageTable
 	var filters = "*"
 
@@ -53,7 +53,7 @@ func (o *Operation) QueryTable(tbname string, filter []string) ([]map[string]int
 		filters = strings.Join(filter, ",")
 	}
 
-	if err := o.DB.Table(tbname).Select(filters).Scan(&records).Error; err != nil {
+	if err := o.DB.Table(tbname).Select(filters).Offset(offset).Limit(limit).Scan(&records).Error; err != nil {
 		return nil, err
 	}
 

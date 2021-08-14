@@ -60,7 +60,7 @@ func main() {
 
 	router.GET("/read", func(c *gin.Context) {
 		_, g, _, _ := rGen()
-		res, err := m.ReadMessage(g, nil)
+		res, err := m.ReadMessage(g, nil, 5, 0)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err)
 			return

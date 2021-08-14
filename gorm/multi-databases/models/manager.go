@@ -172,7 +172,7 @@ type DBWriter interface {
 }
 
 type DBReader interface {
-	ReadMessage(string, []string) ([]map[string]interface{}, error)
+	ReadMessage(string, []string, int, int) ([]map[string]interface{}, error)
 }
 
 type DBBroker interface {
@@ -233,10 +233,10 @@ func (m *MainDb) CreateMessage(group string, name string, age string) error {
 	return db.InsertRecrods(group, name, age)
 }
 
-func (m *MainDb) ReadMessage(group string, option []string) ([]map[string]interface{}, error) {
+func (m *MainDb) ReadMessage(group string, filters []string, limit int, offset int) ([]map[string]interface{}, error) {
 	db, err := m.dbSelect(group)
 	if err != nil {
 		return nil, err
 	}
-	return db.QueryTable(group, option)
+	return db.QueryTable(group, filters, limit, offset)
 }
