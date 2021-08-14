@@ -19,8 +19,7 @@ type GroupInNodes struct {
 	gorm.Model
 	GroupID  string `gorm:"unique"`
 	NodeID   int
-	NodeInfo NodeInfo `gorm:"foreignKey:NodeID"`
-	// NodeID  NodeInfo `gorm:"foreign` // foreign key of node_info_id
+	NodeInfo NodeInfo `gorm:"foreignKey:NodeID"` // Issue: 是否需要做 foreign Key?
 }
 
 // 紀錄 Node DB 的資訊
@@ -188,10 +187,10 @@ func (m *MainDb) PurgeCache() error {
 
 // TODO: 製作決策器 .. 要下決策決定他是去哪一個 shard
 /*
-	1. 獲取既有 DB 的資料
-	2. 獲取 GroupInDB 分配數量
-	3. 分配 group 至 GroupInDB 數量最少的 DB
-	4. [交易]寫入 GroupInDB 紀錄，成功後再返回 DB 編號
+	[x] 1. 獲取既有 DB 的資料
+	[x] 2. 獲取 GroupInDB 分配數量
+	[x] 3. 分配 group 至 GroupInDB 數量最少的 DB
+	[ ] 4. [交易]寫入 GroupInDB 紀錄，成功後再返回 DB 編號
 */
 func (m *MainDb) locDecide(group string) (int, error) {
 	nid, err := m.SettingDB.QueryGroupLoc(group)
@@ -209,7 +208,6 @@ func (m *MainDb) dbSelect(group string) (OPDB, error) {
 		return m.NodeDBs[t], nil
 	}
 
-	// fmt.Printf("----- no cache with group .. %s -----\n", group)
 	loc, err := m.locDecide(group)
 	loc = loc - 1
 	if err != nil {
