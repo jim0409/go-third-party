@@ -8,7 +8,7 @@ skinparam BoxPadding 10
 participant "ClientRequest" as UsrMsg #APPLICATION
 
 box "DBManager" #C7D7D8
-participant "CreateMessage" as DBWriter #BUSINESS
+participant "ReadMessage" as DBReader #BUSINESS
 participant "DbLocDecide" as DBBroker #BUSINESS
 end box
 
@@ -18,27 +18,24 @@ end box
 
 autonumber "0."
 
-UsrMsg -> DBWriter : [Request]\n messages within GroupID
+UsrMsg -> DBReader : [Request]\n messages within GroupID
 activate UsrMsg #F5DDAD
 
-activate DBWriter #F5DDAD
-DBWriter <--> DBBroker : [loc]\nAsk for group table location
+activate DBReader #F5DDAD
+DBReader <--> DBBroker : [loc]\nAsk for group table location
 
-note right of DBBroker
-1. Query MainDb for loc,
-if local cache missd.
-2. if groups loc was not found in table,
-return the less group db loc.
-end note
 
-activate DBBroker #LightBlue
+activate DBBroker #F5DDAD
 DBBroker <--> Dbs : [db:GroupInDB]\nRetrieve Groups Loc
+note right of DBBroker
+if `loc` is not found, return error
+end note
 deactivate DBBroker
 
-DBWriter <--> Dbs : [Insert]\nInsert Message into NodeDbs[loc]
+DBReader <--> Dbs : [Read]\nRead Message from NodeDbs[loc]
 
-DBWriter -> UsrMsg : [Response]\nResult
-deactivate DBWriter
+DBReader -> UsrMsg : [Response]\nResult
+deactivate DBReader
 
 deactivate UsrMsg
 
