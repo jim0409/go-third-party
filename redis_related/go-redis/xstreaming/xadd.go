@@ -7,8 +7,10 @@ import (
 )
 
 func main() {
-	redisAddr := "127.0.0.1:6379"
-	redisAuth := "yourpassword"
+	// redisAddr := "127.0.0.1:6379"
+	// redisAuth := "yourpassword"
+	redisAddr := "10.200.6.99:6379"
+	redisAuth := ""
 
 	redisClient := NewRedisClient(redisAddr, redisAuth)
 
@@ -18,11 +20,10 @@ func main() {
 		"content": "something",
 	}
 
-	err := redisClient.xadd(streamName, value)
+	id, err := redisClient.xadd(streamName, value)
 	if err != nil && err != redis.Nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(redisClient.len(streamName))
-
+	fmt.Println(redisClient.len(streamName), id)
 }
