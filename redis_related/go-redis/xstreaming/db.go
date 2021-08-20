@@ -28,9 +28,10 @@ type redisObject struct {
 
 type redisDAO interface {
 	len(string) int64
-	xread(string)
-	xadd(string, map[string]interface{}) (string, error)
-	xGroupRead(string, string, string)
+	XRead(string)
+	XAdd(string, map[string]interface{}) (string, error)
+	XReadGroup(string, string, string)
+	ConsumePendingGroup(string, string, string)
 	InitXGroup(string, string) error
 }
 
@@ -43,7 +44,7 @@ func (r *redisObject) len(streamName string) int64 {
 	return l
 }
 
-func (r *redisObject) xadd(streamName string, value map[string]interface{}) (string, error) {
+func (r *redisObject) XAdd(streamName string, value map[string]interface{}) (string, error) {
 	newId, err := r.ro.XAdd(&redis.XAddArgs{
 		Stream: streamName,
 		Values: value,
@@ -55,7 +56,7 @@ func (r *redisObject) xadd(streamName string, value map[string]interface{}) (str
 	return newId, nil
 }
 
-func (r *redisObject) xread(streamName string) {
+func (r *redisObject) XRead(streamName string) {
 	entries, err := r.ro.XRead(&redis.XReadArgs{
 		Streams: []string{streamName, "0-1000"},
 		Count:   1,
@@ -70,6 +71,7 @@ func (r *redisObject) xread(streamName string) {
 		return
 	}
 
+	// del id would cause a strictly performance cost
 	for _, msg := range entries[0].Messages {
 		fmt.Println(msg)
 		fmt.Println(r.ro.XDel(streamName, msg.ID).Result())
@@ -78,7 +80,7 @@ func (r *redisObject) xread(streamName string) {
 
 // xread 與 xgroupread 差異:
 // http://www.redis.cn/commands/xreadgroup.html
-func (r *redisObject) xGroupRead(streamName string, groupName string, consumerName string) {
+func (r *redisObject) XReadGroup(streamName string, groupName string, consumerName string) {
 	start := ">"
 	entries, err := r.ro.XReadGroup(&redis.XReadGroupArgs{
 		Streams:  []string{streamName, start},
@@ -93,6 +95,7 @@ func (r *redisObject) xGroupRead(streamName string, groupName string, consumerNa
 		return
 	}
 
+	// _ = entries
 	for _, entry := range entries[0].Messages {
 		// waitGrp.Add(1)
 		go r.processStream(streamName, groupName, entry)
@@ -101,8 +104,53 @@ func (r *redisObject) xGroupRead(streamName string, groupName string, consumerNa
 }
 
 func (r *redisObject) processStream(streamName string, consumerGroup string, stream redis.XMessage) error {
-	fmt.Println(stream.Values)
+	fmt.Println(r.len(streamName), stream.ID, stream.Values)
 	return r.ro.XAck(streamName, consumerGroup, stream.ID).Err()
+}
+
+// 消費一些逾期尚未處理的 streaming message
+func (r *redisObject) ConsumePendingGroup(streamName string, consumerGroup string, consumerName string) {
+	var streamsRetry []string
+	pendingStreams, err := r.ro.XPendingExt(&redis.XPendingExtArgs{
+		Stream: streamName,
+		Group:  consumerGroup,
+		Start:  "0",
+		End:    "+",
+		Count:  10,
+		//Consumer string
+	}).Result()
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, stream := range pendingStreams {
+		streamsRetry = append(streamsRetry, stream.Id)
+	}
+
+	if len(streamsRetry) > 0 {
+
+		streams, err := r.ro.XClaim(&redis.XClaimArgs{
+			Stream:   streamName,
+			Group:    consumerGroup,
+			Consumer: consumerName,
+			Messages: streamsRetry,
+			MinIdle:  30 * time.Second,
+		}).Result()
+
+		if err != nil {
+			log.Printf("err on process pending: %+v\n", err)
+			return
+		}
+
+		for _, stream := range streams {
+			// waitGrp.Add(1)
+			go r.processStream(streamName, consumerGroup, stream)
+		}
+		// waitGrp.Wait()
+	}
+
+	fmt.Println("process pending streams at ", time.Now().Format(time.RFC3339))
 }
 
 func (r *redisObject) InitXGroup(streamName string, consumerGroup string) error {

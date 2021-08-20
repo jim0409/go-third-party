@@ -20,7 +20,7 @@ func main() {
 		"content": "something",
 	}
 
-	id, err := redisClient.xadd(streamName, value)
+	id, err := redisClient.XAdd(streamName, value)
 	if err != nil && err != redis.Nil {
 		fmt.Println(err)
 	}
