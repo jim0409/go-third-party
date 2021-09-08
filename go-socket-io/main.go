@@ -2,18 +2,14 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/labstack/echo"
+	"log"
+	"net/http"
 
 	socketio "github.com/googollee/go-socket.io"
 )
 
 func main() {
-
-	server, err := socketio.NewServer(nil)
-	if err != nil {
-		panic(err)
-	}
+	server := socketio.NewServer(nil)
 
 	server.OnConnect("/", func(s socketio.Conn) error {
 		s.SetContext("")
@@ -29,10 +25,6 @@ func main() {
 	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
 		s.SetContext(msg)
 		return "recv " + msg
-	})
-
-	server.OnEvent("/", "echo", func(s socketio.Conn, msg interface{}) {
-		s.Emit("echo", msg)
 	})
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
@@ -53,16 +45,10 @@ func main() {
 	go server.Serve()
 	defer server.Close()
 
-	e := echo.New()
-	e.HideBanner = true
-
-	e.Static("/", "../asset")
-	e.Any("/socket.io/", func(context echo.Context) error {
-		server.ServeHTTP(context.Response(), context.Request())
-		return nil
-	})
-	e.Logger.Fatal(e.Start(":3000"))
-
+	http.Handle("/socket.io/", server)
+	http.Handle("/", http.FileServer(http.Dir("./asset")))
+	log.Println("Serving at localhost:8000...")
+	log.Fatal(http.ListenAndServe(":8000", nil))
 }
 
 // refer:
