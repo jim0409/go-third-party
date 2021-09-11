@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 )
 
 // Create the JWT key used to create the signature

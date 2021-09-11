@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	uuid "github.com/satori/go.uuid"
 )
 

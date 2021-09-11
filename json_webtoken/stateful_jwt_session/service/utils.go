@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 )
 
 var JwtKey = []byte("my_secret_key")

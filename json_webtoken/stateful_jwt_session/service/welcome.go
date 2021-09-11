@@ -5,7 +5,7 @@ import (
 	"go-third-party/json_webtoken/stateful_jwt_session/redispool"
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 )
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
