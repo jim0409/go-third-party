@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/olivere/elastic"
 	"github.com/teris-io/shortid"
+	"go.elastic.co/apm/module/apmgin"
 )
 
 const (
@@ -64,12 +65,46 @@ func main() {
 	}
 	// Start HTTP server
 	r := gin.Default()
+	r.Use(apmgin.Middleware(r))
 	r.POST("/documents", createDocumentsEndpoint)
 	r.GET("/search", searchEndpoint)
+	// r.GET("/trace", traceEndpoint)
+	r.GET("/ok", okEndpoint)
+	r.GET("/an-ok", okEndpoint)
 	if err = r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
 }
+
+func okEndpoint(c *gin.Context) {
+	c.Status(http.StatusOK)
+}
+
+// func traceEndpoint(c *gin.Context) {
+// 	tx := apm.DefaultTracer.StartTransaction("GET /trace", "request")
+// 	defer tx.End()
+// 	tx.Result = "HTTP 2xx"
+// 	tx.Context.SetLabel("region", "us-east-1")
+
+// 	step1(tx)
+// 	step2(tx)
+// 	c.Status(http.StatusOK)
+
+// }
+
+// func step1(tx *apm.Transaction) {
+// 	s := tx.StartSpan("step1", "step1", nil)
+// 	defer s.End()
+
+// 	time.Sleep(time.Second * 1)
+// }
+
+// func step2(tx *apm.Transaction) {
+// 	s := tx.StartSpan("step2", "step2", nil)
+// 	defer s.End()
+
+// 	time.Sleep(time.Second * 1)
+// }
 
 func createDocumentsEndpoint(c *gin.Context) {
 	// Parse request

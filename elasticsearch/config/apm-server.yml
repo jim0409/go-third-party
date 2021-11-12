@@ -1,0 +1,9 @@
+apm-server:
+  host: "0.0.0.0:8200"
+  apm-server.secret_token: "xxxxx"
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  # username: "elastic"
+  # password: "xxx"
+setup.kibana:
+  host: "kibana:5601"

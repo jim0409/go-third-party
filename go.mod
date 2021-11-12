@@ -62,6 +62,8 @@ require (
 	github.com/wangtuanjie/ip17mon v1.5.2
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9 // indirect
 	github.com/zommage/cron v0.0.0-20180918061821-210507a89644
+	go.elastic.co/apm v1.14.0
+	go.elastic.co/apm/module/apmgin v1.14.0
 	go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738
 	go.etcd.io/etcd/client/pkg/v3 v3.5.0
 	go.etcd.io/etcd/raft/v3 v3.5.0
