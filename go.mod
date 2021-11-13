@@ -60,9 +60,9 @@ require (
 	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125
 	github.com/vmware/govmomi v0.26.0
 	github.com/wangtuanjie/ip17mon v1.5.2
+	github.com/xtaci/kcp-go/v5 v5.6.1
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9 // indirect
 	github.com/zommage/cron v0.0.0-20180918061821-210507a89644
-	go.elastic.co/apm v1.14.0
 	go.elastic.co/apm/module/apmgin v1.14.0
 	go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738
 	go.etcd.io/etcd/client/pkg/v3 v3.5.0
@@ -70,7 +70,7 @@ require (
 	go.etcd.io/etcd/server/v3 v3.5.0
 	go.mongodb.org/mongo-driver v1.5.3
 	go.uber.org/zap v1.17.0
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/net v0.0.0-20210716203947-853a461950ff
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.27.0 // indirect
