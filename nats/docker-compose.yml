@@ -1,88 +1,11 @@
-version: "3"
+version: '2'
+
 services:
-  nats1:
-    container_name: nats-streaming1
-    image: nats-streaming
-    command: ["-c","cluster.config"]
-    restart: always
+  nats:
+    image: 'nats:0.8.0'
+    container_name: nats
+    entrypoint: "/gnatsd -DV"
+    expose:
+      - "4222"
     ports:
-      - 4221:4221
-      - 6221:6221
-      # - 8221:8221 # http 監控 port
-    volumes:
-     - "./cluster1.config:/cluster.config"
-    networks:
-      - proxy-network
-
-  nats-exporter1:
-    image: synadia/prometheus-nats-exporter:0.3.0
-    command: ["-serverz", "nats://nats1:4221"]
-    # ports:
-      # - 7777:7777 # 打開對外 port: 7777
-    networks:
-      - proxy-network
-
-  nats2:
-    container_name: nats-streaming2
-    image: nats-streaming
-    command: ["-c","cluster.config"]
-    restart: always
-    ports:
-      - 4222:4222
-      - 6222:6222
-      # - 8222:8222 # http 監控 port
-    networks:
-      - proxy-network
-    volumes:
-     - "./cluster2.config:/cluster.config"
-
-  nats-exporter2:
-    image: synadia/prometheus-nats-exporter:0.3.0
-    command: ["-serverz", "nats://nats2:4222"]
-    # ports:
-      # - 7778:7777 # 打開對外 port 7778
-    networks:
-      - proxy-network
-
-  nats3:
-    container_name: nats-streaming3
-    image: nats-streaming
-    command: ["-c","cluster.config"]
-    restart: always
-    ports:
-      - 4223:4223
-      - 6223:6223
-      # - 8223:8223 # http 監控 port
-    networks:
-      - proxy-network
-    volumes:
-     - "./cluster3.config:/cluster.config"
-
-  nats-exporter3:
-    image: synadia/prometheus-nats-exporter:0.3.0
-    command: ["-serverz", "nats://nats3:4223"]
-    # ports:
-      # - 7779:7777 # 打開對外 port 7779
-    networks:
-      - proxy-network
-
-  prometheus:
-    container_name: prometheus
-    image: quay.io/prometheus/prometheus:latest
-    ports:
-     - 9090:9090
-    volumes:
-     - "./prometheus.yml:/etc/prometheus/prometheus.yml"
-    networks:
-      - proxy-network
-
-  grafana:
-    image: grafana/grafana
-    ports:
-      - 3000:3000
-    networks:
-      - proxy-network
-
-networks:
-  proxy-network:
-    driver: bridge
+      - "4222:4222"
