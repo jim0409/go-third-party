@@ -41,8 +41,8 @@ require (
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1
 	github.com/nats-io/nats-streaming-server v0.22.0 // indirect
-	github.com/nats-io/nats.go v1.11.0
-	github.com/nats-io/stan.go v0.9.0
+	github.com/nats-io/nats.go v1.13.0
+	github.com/nats-io/stan.go v0.10.1
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/olivere/elastic v6.2.35+incompatible
 	github.com/oschwald/maxminddb-golang v1.8.0
