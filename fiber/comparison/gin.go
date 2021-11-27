@@ -17,6 +17,17 @@ Running 10s test @ http://127.0.0.1:3001
   946268 requests in 10.10s, 121.83MB read
 Requests/sec:  93660.60
 Transfer/sec:     12.06MB
+
+
+➜  go-third-party git:(main) ✗ wrk -t100 -c100 http://127.0.0.1:3001/123
+Running 10s test @ http://127.0.0.1:3001/123
+  100 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.08ms  365.52us   5.21ms   82.45%
+    Req/Sec     0.93k    68.89     1.26k    64.72%
+  935227 requests in 10.10s, 111.49MB read
+Requests/sec:  92556.79
+Transfer/sec:     11.03MB
 */
 
 func ginServer() {
@@ -24,6 +35,14 @@ func ginServer() {
 
 	route.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello, World 👋!")
+		// c.JSON(200, gin.H{
+		// 	"message": "pong",
+		// })
+	})
+
+	route.GET("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		c.String(200, fmt.Sprintf("%v 👋!", id))
 		// c.JSON(200, gin.H{
 		// 	"message": "pong",
 		// })
