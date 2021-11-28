@@ -27,9 +27,16 @@ func main() {
 				panic(err)
 			}
 			defer cancel()
-
-			c.Close(websocket.StatusNormalClosure, "")
-			defer wg.Done()
+			for {
+				time.Sleep(1 * time.Second)
+				if err := c.Write(ctx, websocket.MessageBinary, []byte("ping")); err != nil {
+					fmt.Println(err)
+					c.Close(websocket.StatusNormalClosure, "")
+					defer wg.Done()
+				}
+			}
+			// c.Close(websocket.StatusNormalClosure, "")
+			// defer wg.Done()
 		}()
 	}
 	wg.Wait()
