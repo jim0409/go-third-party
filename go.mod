@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/Jeffail/gabs v1.4.0
+	github.com/LdDl/fiber-long-poll/v2 v2.2.4
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/Shopify/sarama v1.29.1
 	github.com/alicebob/miniredis v2.5.0+incompatible
@@ -29,6 +30,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/influxdata/influxdb v1.9.1
+	github.com/jcuga/golongpoll v1.3.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible
@@ -52,6 +54,7 @@ require (
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
 	github.com/stretchr/testify v1.7.0
 	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125
+	github.com/valyala/fasthttp v1.31.0
 	github.com/wangtuanjie/ip17mon v1.5.2
 	github.com/xtaci/kcp-go/v5 v5.6.1
 	github.com/zommage/cron v0.0.0-20180918061821-210507a89644
@@ -178,7 +181,6 @@ require (
 	github.com/tjfoc/gmsm v1.3.2 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.31.0 // indirect
 	github.com/valyala/fasttemplate v1.0.1 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
