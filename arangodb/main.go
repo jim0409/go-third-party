@@ -64,6 +64,13 @@ func main() {
 		panic(err)
 	}
 
+	// insert new collection
+	collection, err := db.CreateCollection(context.TODO(), "AdminAccounts", nil)
+	if err != nil {
+		return
+	}
+	fmt.Println(collection)
+
 	found, err := db.CollectionExists(ctx, "AdminAccounts")
 	if err != nil {
 		panic(err)
