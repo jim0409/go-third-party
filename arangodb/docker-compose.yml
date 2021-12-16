@@ -5,10 +5,10 @@ services:
     image: arangodb/arangodb:3.6.2
     environment:
       # - ARANGO_NO_AUTH=1 # open it to disable authorization check
-      - ARANGO_ROOT_PASSWORD=somepassword
-    volumes:
-      - ./arangodb_data_container:/var/lib/arangodb3
-      - ./arangodb_apps_data_container:/var/lib/arangodb3-apps
+      - ARANGO_ROOT_PASSWORD=yourpassword
+    # volumes:
+    #   - ./arangodb_data_container:/var/lib/arangodb3
+    #   - ./arangodb_apps_data_container:/var/lib/arangodb3-apps
     ports:
       - "8529:8529"
 
