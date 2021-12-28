@@ -27,6 +27,7 @@ import (
 	"net"
 
 	pb "go-third-party/gRPC/hello_server/helloworld"
+
 	"google.golang.org/grpc"
 )
 
@@ -35,7 +36,9 @@ const (
 )
 
 // server is used to implement helloworld.GreeterServer.
-type server struct{}
+type server struct {
+	pb.UnimplementedGreeterServer
+}
 
 // SayHello implements helloworld.GreeterServer
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {

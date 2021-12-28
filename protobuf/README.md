@@ -57,9 +57,36 @@ message Teacher{
 
 
 # 安裝 protoc
+1. brew install protoc
+
+
+# 安裝 protoc-gen-go-grpc
+2. go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+
+# 設定 GOBIN/PATH:
+```
+export GOPATH="/Users/jim.weng/go"
+export PATH="$PATH:$GOPATH/bin"
+```
+
+# 快速建置 base on grpc 的 protobuf(更新1.3.2之後的版本編譯方式)
+1. .proto 檔內需要添加 option
+```
+option go_package = "/proto";
+```
+2. 指令更改為
+```
+protoc -I . --go-grpc_out=. --go_out=. ./proto/*.proto
+```
+<!-- 備註: 請在相對路徑執行!! -->
 
 
 # refer:
 - https://yami.io/protobuf/
 - https://developers.google.com/protocol-buffers/docs/gotutorial
 - https://segmentfault.com/a/1190000009277748
+
+# debug-error:
+- https://blog.csdn.net/weixin_43851310/article/details/115431651
+- https://stackoverflow.com/questions/60578892/protoc-gen-go-grpc-program-not-found-or-is-not-executable

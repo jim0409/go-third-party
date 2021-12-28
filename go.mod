@@ -71,6 +71,7 @@ require (
 	golang.org/x/net v0.0.0-20210716203947-853a461950ff
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	google.golang.org/grpc v1.38.0
+	google.golang.org/protobuf v1.27.0
 	gopkg.in/mcuadros/go-syslog.v2 v2.3.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/redis.v2 v2.3.2
@@ -206,7 +207,6 @@ require (
 	golang.org/x/tools v0.1.5 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
-	google.golang.org/protobuf v1.27.0 // indirect
 	gopkg.in/bufio.v1 v1.0.0-20140618132640-567b2bfa514e // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -220,4 +220,4 @@ require (
 // bug from etcd
 // refer: https://www.cnblogs.com/anmutu/p/etcd.html
 // google.golang.org/grpc 1.26 之後的版本是不支持 clientv3的，所以要把它改成 1.26.0
-replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
+// replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
