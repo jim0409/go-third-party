@@ -1,5 +1,17 @@
 version: "3"
 services:
+  console:
+    container_name: console
+    # no user/password support ...
+    # https://github.com/piotrpersona/nats-streaming-ui
+    image: piotrpersona/nats-streaming-ui:latest
+    environment:
+      - STAN_URL=http://nats1:4221
+      - STAN_MONITOR_URL=http://nats1:8221
+      - STAN_CLUSTER=stan
+    ports:
+      - 8282:8282 
+
   nats1:
     container_name: stan1
     image: nats-streaming
@@ -8,7 +20,7 @@ services:
     ports:
       - 4221:4221
       - 6221:6221
-      # - 8221:8221 # http 監控 port
+      - 8221:8221 # http 監控 port
     volumes:
      - "../fullenv/cluster1.config:/cluster.config"
 
@@ -20,7 +32,7 @@ services:
     ports:
       - 4222:4222
       - 6222:6222
-      # - 8222:8222 # http 監控 port
+      - 8222:8222 # http 監控 port
     volumes:
      - "../fullenv/cluster2.config:/cluster.config"
 
@@ -32,7 +44,7 @@ services:
     ports:
       - 4223:4223
       - 6223:6223
-      # - 8223:8223 # http 監控 port
+      - 8223:8223 # http 監控 port
     volumes:
      - "../fullenv/cluster3.config:/cluster.config"
 
