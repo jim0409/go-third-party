@@ -7,6 +7,7 @@ require (
 	github.com/LdDl/fiber-long-poll/v2 v2.2.4
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/Shopify/sarama v1.29.1
+	github.com/adamwasila/arangodb-adapter v0.0.0-20201031091335-f993eae059c6
 	github.com/alicebob/miniredis v2.5.0+incompatible
 	github.com/arangodb/go-driver v0.0.0-20210602123439-e63cef3dc348
 	github.com/aws/aws-lambda-go v1.24.0
