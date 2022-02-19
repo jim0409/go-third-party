@@ -9,8 +9,10 @@ import (
 
 func main() {
 	a, err := arango.NewAdapter(
-		arango.OpCollectionName("casbinrules"),
-		arango.OpFieldMapping("p", "sub", "obj", "act"))
+		arango.OpEndpoints("http://127.0.0.1:9001"),
+		arango.OpCollectionName("casbin_rules"),
+		arango.OpFieldMapping("p", "sub", "obj", "act"),
+	)
 
 	if err != nil {
 		fmt.Printf("Adapter creation error! %s\n", err)
@@ -27,6 +29,18 @@ func main() {
 		fmt.Printf("Load policy error! %s\n", err)
 		return
 	}
+
+	// Modify the policy.
+	// e.AddPolicy(...)
+	// e.RemovePolicy(...)
+	e.AddPolicy("adam", "data1", "write")
+	e.AddPolicy("bob", "data1", "read")
+	e.AddPolicy("cecile", "data1", "write")
+	e.AddPolicy("alice", "data1", "read")
+	e.SavePolicy()
+
+	fmt.Printf("Thats all folks\n")
+
 	sub, obj, act := "alice", "data1", "read"
 	r, err := e.Enforce(sub, obj, act)
 	if err != nil {
@@ -38,14 +52,4 @@ func main() {
 	} else {
 		fmt.Printf("%s %s %s: Access granted", sub, obj, act)
 	}
-
-	// Modify the policy.
-	// e.AddPolicy(...)
-	// e.RemovePolicy(...)
-
-	e.AddPolicy("adam", "data1", "write")
-	e.AddPolicy("bob", "data1", "read")
-	e.AddPolicy("cecile", "data1", "write")
-	e.SavePolicy()
-	fmt.Printf("Thats all folks")
 }
