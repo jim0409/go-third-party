@@ -9,8 +9,11 @@ import (
 
 func main() {
 	a, err := arango.NewAdapter(
-		arango.OpEndpoints("http://127.0.0.1:9001"),
-		arango.OpCollectionName("casbin_rules"),
+		arango.OpBasicAuthCredentials("root", ""),
+		arango.OpAutocreate(false),
+		arango.OpDatabaseName("Database"),
+		arango.OpEndpoints("http://127.0.0.1:8529"),
+		arango.OpCollectionName("PolicyRules"),
 		arango.OpFieldMapping("p", "sub", "obj", "act"),
 	)
 
