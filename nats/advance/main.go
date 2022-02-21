@@ -1,30 +1,34 @@
 package main
 
 import (
-	"fmt"
+	"go-third-party/nats/advance/natsdk"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
+// TODO:
+/*
+1. receive packets from stan
+2. parse packets
+3. write content to arangodb
+*/
+
 func main() {
 
-	fmt.Println("wait for ctrl + c")
 	natsUrl := "nats://127.0.0.1:4222"
-	sc, err := InitNatsServer("test-sub", natsUrl, "stan", "stan")
+	sc, err := natsdk.InitNatsServer("test-pub", natsUrl, "stan", "stan")
 	if err != nil {
-		sc.Closed()
-	}
-
-	// if err := sc.SendMsg("stan", []byte("test")); err != nil {
-	// 	panic(err)
-	// }
-	sub, err := sc.RecvMsg("stan")
-	if err != nil {
-		sub.Unsubscribe()
 		panic(err)
 	}
+	defer sc.Closed()
+
+	sub, err := sc.RecvMsg("stan")
+	if err != nil {
+		panic(err)
+	}
+	defer sub.Unsubscribe()
 
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
