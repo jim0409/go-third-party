@@ -17,14 +17,14 @@ import (
 
 func main() {
 
-	natsUrl := "nats://127.0.0.1:4222"
-	sc, err := natsdk.InitNatsServer("test-pub", natsUrl, "stan", "stan")
+	natsUrl := "nats://3.112.66.62:4222"
+	sc, err := natsdk.InitNatsServer("stan-local", natsUrl, "stan", "stan")
 	if err != nil {
 		panic(err)
 	}
 	defer sc.Closed()
 
-	sub, err := sc.RecvMsg("stan")
+	sub, err := sc.RecvMsg("MatchUpdate")
 	if err != nil {
 		panic(err)
 	}

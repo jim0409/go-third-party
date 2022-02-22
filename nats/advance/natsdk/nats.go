@@ -1,6 +1,10 @@
 package natsdk
 
 import (
+	"bytes"
+	"encoding/binary"
+	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/nats-io/nats.go"
@@ -73,7 +77,8 @@ func (c *Client) RecvMsg(subj string) (stan.Subscription, error) {
 	durable := ""
 	mcb := func(msg *stan.Msg) {
 		i++
-		printMsg(msg, i)
+		// printMsg(msg, i)
+		handleReceiveMsg(msg, i)
 	}
 	// sub, err := c.Nats.QueueSubscribe(subj, qgroup, mcb, startOpt, stan.DurableName(durable))
 	// if err != nil {
@@ -83,6 +88,33 @@ func (c *Client) RecvMsg(subj string) (stan.Subscription, error) {
 
 	// return sub, nil
 	return c.Nats.QueueSubscribe(subj, qgroup, mcb, startOpt, stan.DurableName(durable))
+}
+
+func BytesToInt(b []byte) int {
+	bytesBuffer := bytes.NewBuffer(b)
+	var x int32
+	binary.Read(bytesBuffer, binary.LittleEndian, &x)
+	return int(x)
+}
+
+func handleReceiveMsg(m *stan.Msg, i int) {
+	fmt.Println("================", i)
+	fmt.Printf("opcode: %v\n", m.Data[0:1])                    // 1 byte
+	fmt.Printf("source code: %v\n", m.Data[1:2])               // 2 byte
+	fmt.Printf("payload size: %d\n", BytesToInt(m.Data[3:10])) // 8 byte
+	// fmt.Printf("%s\n", m.Data[2:2])
+	// fmt.Printf("%s\n", m.Data[3:3])
+	// fmt.Printf("%s\n", m.Data[11:])
+	data := m.Data[11:]
+	var jsonObj = make(map[string]interface{})
+	err := json.Unmarshal(data, &jsonObj)
+	if err != nil {
+		panic(err)
+	}
+
+	for k, v := range jsonObj {
+		fmt.Println(k, v)
+	}
 }
 
 func printMsg(m *stan.Msg, i int) {
