@@ -57,4 +57,39 @@ func main() {
 
 	// Prints the value of last count
 	fmt.Println("The value of last count is :", atmvar)
+
+	internalAtmvarfunc()
+}
+
+func internalAtmvarfunc() {
+
+	// Declaring atomic variable
+	var atmvar uint32
+
+	// Using sync.WaitGroup in order to
+	// wait for a collection of
+	// goroutines to finish
+	var wait sync.WaitGroup
+
+	// For loop
+	for i := 0; i < 30; i += 2 {
+
+		// Calling Add method
+		wait.Add(1)
+
+		// Calling AddUint32 method under
+		// go function
+		go func() {
+			atomic.AddUint32(&atmvar, 2)
+
+			// Wait completed
+			wait.Done()
+		}()
+	}
+
+	// Calling wait method
+	wait.Wait()
+
+	// Prints atomic variables value
+	fmt.Println("atmvar:", atmvar)
 }
