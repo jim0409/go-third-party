@@ -5,7 +5,8 @@ import (
 	"log"
 	"time"
 
-	"../gRPC/blockchain_server/proto"
+	"go-third-party/gRPC/blockchain_server/proto"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
