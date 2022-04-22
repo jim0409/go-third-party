@@ -108,6 +108,8 @@ github.com/apache/arrow/go/arrow v0.0.0-20191024131854-af6fa24be0db/go.mod h1:VT
 github.com/apache/arrow/go/arrow v0.0.0-20200923215132-ac86123a3f01/go.mod h1:QNYViu/X0HXDHw7m3KXzWSVXIbfUvJqBFe6Gj8/pYA0=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/apache/thrift v0.13.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
+github.com/appleboy/graceful v0.0.4 h1:Q4LCeq4DFy59qiACLtuH+mSqDERtUzwkQbCWpRaWwvQ=
+github.com/appleboy/graceful v0.0.4/go.mod h1:Q2mVx0t+N0lCDZc5MJudbcpTm6cgGM/J2gZCZIqD9dc=
 github.com/arangodb/go-driver v0.0.0-20191127082236-a9ece235fd7a/go.mod h1:KUmEAkW5lQ0pIZMpvcCtFxwwU1mfY4hEqjm0rkF1C4w=
 github.com/arangodb/go-driver v0.0.0-20210602123439-e63cef3dc348 h1:IhUYdAmi4kzFhJwK945PxzQJS1RgwghD4AMEt7Atn3g=
 github.com/arangodb/go-driver v0.0.0-20210602123439-e63cef3dc348/go.mod h1:3NUekcRLpgheFIGEwcOvxilEW73MV1queNKW58k7sdc=

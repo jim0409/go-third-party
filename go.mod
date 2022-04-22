@@ -9,6 +9,7 @@ require (
 	github.com/Shopify/sarama v1.29.1
 	github.com/adamwasila/arangodb-adapter v0.0.0-20201031091335-f993eae059c6
 	github.com/alicebob/miniredis v2.5.0+incompatible
+	github.com/appleboy/graceful v0.0.4
 	github.com/arangodb/go-driver v0.0.0-20210602123439-e63cef3dc348
 	github.com/aws/aws-lambda-go v1.24.0
 	github.com/bluele/slack v0.0.0-20180528010058-b4b4d354a079
