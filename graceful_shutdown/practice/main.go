@@ -16,7 +16,7 @@ func main() {
 	m := graceful.NewManager()
 
 	ln, _ := net.Listen("tcp", ":8200")
-	http.HandleFunc("/test", echo)
+	http.HandleFunc("/count", count)
 
 	/*
 		用 http server 會卡住
@@ -43,8 +43,8 @@ func main() {
 	<-m.Done()
 }
 
-func echo(res http.ResponseWriter, r *http.Request) {
-	log.Println("test")
+func count(res http.ResponseWriter, r *http.Request) {
+	// log.Println("count++")
 	atomic.AddInt32(&num, 1)
 	_, err := io.WriteString(res, "ok")
 	if err != nil {
