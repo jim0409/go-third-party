@@ -15,7 +15,8 @@ func failOnError(err error, msg string) {
 
 func main() {
 	// Here we connect to RabbitMQ or send a message if there are any errors connecting.
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	// conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://root:password@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
