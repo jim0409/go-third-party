@@ -8,16 +8,6 @@ type RedisInstance struct {
 	Client redis.UniversalClient
 }
 
-// type IRedisMethod interface {
-// 	HSet(key, field string, value int) error
-// 	HIncr(key, field string, value int) error
-
-// 	Set(key string, value int) error
-// 	Incr(key string, value int) error
-
-// 	Lpush(key string, value int) error
-// }
-
 // Cluster
 func NewRedisInstance() *RedisInstance {
 	opt := redis.UniversalOptions{
