@@ -1,24 +1,25 @@
 package main
 
-import "github.com/go-redis/redis"
+import (
+	"github.com/go-redis/redis"
+)
 
 type RedisInstance struct {
-	// Client *redis.ClusterClient
 	Client redis.UniversalClient
 }
 
-type IRedisMethod interface {
-	HSet(key, field string, value int) error
-	HIncr(key, field string, value int) error
+// type IRedisMethod interface {
+// 	HSet(key, field string, value int) error
+// 	HIncr(key, field string, value int) error
 
-	Set(key string, value int) error
-	Incr(key string, value int) error
+// 	Set(key string, value int) error
+// 	Incr(key string, value int) error
 
-	Lpush(key string, value int) error
-}
+// 	Lpush(key string, value int) error
+// }
 
 // Cluster
-func NewRedisInstance() IRedisMethod {
+func NewRedisInstance() *RedisInstance {
 	opt := redis.UniversalOptions{
 		Addrs: []string{
 			":7001",
@@ -35,6 +36,7 @@ func NewRedisInstance() IRedisMethod {
 	if err != nil {
 		panic(err)
 	}
+
 	return &RedisInstance{
 		Client: clusterClient,
 	}
@@ -57,5 +59,8 @@ func (r *RedisInstance) Incr(key string, value int) error {
 }
 
 func (r *RedisInstance) Lpush(key string, value int) error {
-	return r.Client.LPush(key, value).Err()
+	pipe := r.Client.Pipeline()
+	pipe.LPush(key, value)
+	defer pipe.Exec()
+	return nil
 }

@@ -21,17 +21,17 @@ Transfer/sec:      1.06MB
 var rsc = NewRedisInstance()
 
 func Init() {
-	if err := rsc.HSet("benchmark", "score", 0); err != nil {
-		panic(err)
-	}
+	// if err := rsc.HSet("benchmark", "score", 0); err != nil {
+	// 	panic(err)
+	// }
 
 	// if err := rsc.Set("benchmark", 0); err != nil {
 	// 	panic(err)
 	// }
 
-	// if err := rsc.Lpush("benchmark", 1); err != nil {
-	// 	panic(err)
-	// }
+	if err := rsc.Lpush("benchmark", 1); err != nil {
+		panic(err)
+	}
 }
 
 func main() {
@@ -66,12 +66,12 @@ func benchmarkHandler(c *gin.Context) {
 	// counter = counter + 1
 	// filed := fmt.Sprintf("%v", counter+1)
 
-	if err := rsc.HIncr("benchmark", "score", 1); err != nil {
-		c.JSON(500, gin.H{
-			"message": err,
-		})
-		return
-	}
+	// if err := rsc.HIncr("benchmark", "score", 1); err != nil {
+	// 	c.JSON(500, gin.H{
+	// 		"message": err,
+	// 	})
+	// 	return
+	// }
 
 	// if err := rsc.Incr("benchmark", 1); err != nil {
 	// 	c.JSON(500, gin.H{
@@ -87,12 +87,14 @@ func benchmarkHandler(c *gin.Context) {
 	// 	return
 	// }
 
-	// if err := rsc.Lpush("benchmark", 1); err != nil {
-	// 	c.JSON(500, gin.H{
-	// 		"message": err,
-	// 	})
-	// 	return
-	// }
+	if err := rsc.Lpush("benchmark", 1); err != nil {
+		c.JSON(500, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	defer rsc.Client.Pipeline().Exec()
 
 	c.JSON(200, gin.H{
 		"message": "ok",
