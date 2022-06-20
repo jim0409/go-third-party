@@ -19,3 +19,6 @@
 *.backup
 
 vendor
+
+# for rafe-apps example
+raftexample-*

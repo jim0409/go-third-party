@@ -118,6 +118,9 @@ case $cmd in
 	"cls")
 	rm -rf raftexample-*
 ;;
+	"bhk")
+	wrk -s put.lua -t10 -c10 -d5 http://127.0.0.1:12380/foo
+;;
 	*)
 	echo "no such command support"
 esac
