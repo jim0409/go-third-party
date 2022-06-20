@@ -9,7 +9,7 @@ import (
 )
 
 /*
-Running 5s test @ http://127.0.0.1:8000/benchmark
+Running 5s test @ http://127.0.0.1:8000/benchmark/create
   10 threads and 10 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
     Latency    10.36ms    5.86ms  67.64ms   93.92%
@@ -17,6 +17,17 @@ Running 5s test @ http://127.0.0.1:8000/benchmark
   5133 requests in 5.10s, 696.76KB read
 Requests/sec:   1005.57
 Transfer/sec:    136.50KB
+*/
+
+/*
+Running 5s test @ http://127.0.0.1:8000/benchmark/update
+  10 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    25.35ms    5.68ms  82.58ms   92.22%
+    Req/Sec    39.64      6.21    50.00     65.60%
+  1985 requests in 5.01s, 269.45KB read
+Requests/sec:    395.98
+Transfer/sec:     53.75KB
 */
 
 var opdb OPDB
@@ -53,18 +64,35 @@ func apiRouter(router *gin.Engine) {
 	r := router.Group("/")
 	v1 := r.Group("benchmark")
 	{
-		v1.GET("", benchmarkHandler)
+		v1.GET("create", benchmarkCreateHandler)
+		v1.GET("update", benchmarkUpdateHandler)
 
 	}
 }
 
-func benchmarkHandler(c *gin.Context) {
-	if err := opdb.CRUD("c", "jim", 1); err != nil {
+var count = 0
+
+func benchmarkCreateHandler(c *gin.Context) {
+	if err := opdb.Create("jim", 1); err != nil {
 		c.JSON(500, gin.H{
 			"meessage": fmt.Sprintf("%v", err),
 		})
 		return
 	}
+	count = count + 1
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
+}
+
+func benchmarkUpdateHandler(c *gin.Context) {
+	if err := opdb.Update("jim", count); err != nil {
+		c.JSON(500, gin.H{
+			"meessage": fmt.Sprintf("%v", err),
+		})
+		return
+	}
+	count = count + 1
 	c.JSON(200, gin.H{
 		"message": "ok",
 	})
