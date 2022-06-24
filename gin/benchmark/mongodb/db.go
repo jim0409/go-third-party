@@ -7,6 +7,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -65,11 +66,22 @@ func (db *DBConfig) connectToMongoDB() (*mongo.Client, error) {
 		return nil, fmt.Errorf("connect mongod ctx failed : %v", err)
 	}
 
+	// TODO: refactor
+	sess, err = mgo.Dial("localhost:27017")
+	if err != nil {
+		return nil, err
+	}
+
+	sess.Login(&mgo.Credential{
+		Username: db.username,
+		Password: db.password,
+	})
+
 	return client, nil
 }
 
 type OPDB struct {
-	Client *mongo.Database
+	Client *mongo.Client
 }
 
 type method interface {
@@ -102,6 +114,37 @@ func (db *OPDB) Create(account string, money int) error {
 	}
 	opts := options.CreateCollection().SetValidator(validator)
 
-	return db.Client.CreateCollection(context.TODO(), account, opts)
+	return db.Client.Database("mongo").CreateCollection(context.TODO(), account, opts)
 
+}
+
+// refer: https://stackoverflow.com/a/58413538
+// refer: https://stackoverflow.com/a/30342840
+
+var sess *mgo.Session
+var client *mongo.Client
+
+type Data struct {
+	// ID      primitive.ObjectID `bson:"_id"`
+	ID      string `bson:"_id"`
+	Counter int
+}
+
+func (db *OPDB) Bulk(account string, money int) error {
+
+	if err := sess.Login(&mgo.Credential{Username: "root", Password: "password"}); err != nil {
+		return err
+	}
+
+	c := sess.DB("mongo").C("bulk")
+	if _, err := c.RemoveAll(bson.M{}); err != nil {
+		return err
+	}
+
+	bulk := c.Bulk()
+
+	bulk.Insert(&Data{ID: account, Counter: money})
+
+	_, err := bulk.Run()
+	return err
 }

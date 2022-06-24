@@ -36,7 +36,9 @@ func Init() {
 		panic(err)
 	}
 
-	opdb = OPDB{Client: client.Database("mongo")}
+	opdb = OPDB{
+		Client: client,
+	}
 
 }
 
@@ -73,7 +75,8 @@ var count = 0
 
 func benchmarkCreateHandler(c *gin.Context) {
 	account := xid.New().String()
-	if err := opdb.Create(account, 1); err != nil {
+	// if err := opdb.Create(account, 1); err != nil {
+	if err := opdb.Bulk(account, 1); err != nil {
 		c.JSON(500, gin.H{
 			"meessage": fmt.Sprintf("%v", err),
 		})
