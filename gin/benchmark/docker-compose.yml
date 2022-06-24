@@ -1,12 +1,12 @@
 version: "3"
 services:
-  redis-ui:
-    image: rediscommander/redis-commander:latest
-    container_name: redis-ui
-    environment:
-      - REDIS_HOSTS=redis:redis:6379:0:yourpassword
-    ports:
-      - "8081:8081"
+  # redis-ui:
+  #   image: rediscommander/redis-commander:latest
+  #   container_name: redis-ui
+  #   environment:
+  #     - REDIS_HOSTS=redis:redis:6379:0:yourpassword
+  #   ports:
+  #     - "8081:8081"
 
   redis:
     image: redis
@@ -45,3 +45,27 @@ services:
       MYSQL_DATABASE: benchmark
     ports:
      - 3306:3306
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      # MongoDB server
+      ME_CONFIG_MONGODB_SERVER: mongo
+      # MongoDB port
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
