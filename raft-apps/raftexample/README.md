@@ -26,14 +26,16 @@ via raft lib to build some apps
 
 
 # 增加key-value
-1. 增加一個 key: jim, value: weng 的鍵值
-> ./run add jim weng
+1. 增加一個 key: foo, value: bar 的鍵值
+> ./run add foo bar
 
 
 # 驗證key-valu
-1. 取得 key: jim 的值
-> ./run get jim
+1. 取得 key: foo 的值
+> ./run get foo
 
+# 以 wrk 做性能測試
+> ./run bhk
 
 # 備註
 1. 當節點故障後重新啟動
