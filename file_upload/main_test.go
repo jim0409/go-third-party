@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"testing"
 )
 
 type UserInfo struct {
@@ -47,6 +48,6 @@ func readCsvFile(f string) []UserInfo {
 	return UserInfos
 }
 
-func main() {
+func TestUpload(t *testing.T) {
 	readCsvFile("files/upload.csv")
 }
