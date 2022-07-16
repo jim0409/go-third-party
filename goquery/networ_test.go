@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"testing"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -54,6 +55,6 @@ func goGet() {
 	fmt.Println("####### rows = ", len(rows), rows)
 }
 
-func main() {
+func TestGoGet(t *testing.T) {
 	goGet()
 }

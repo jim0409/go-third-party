@@ -3,7 +3,8 @@ package response
 import (
 	"fmt"
 	"io"
-	pb "rpcTest/rpcbuild/rpcbuild/friday"
+
+	pb "go-third-party/gRPC/streaming/stream"
 
 	"golang.org/x/net/context"
 )
