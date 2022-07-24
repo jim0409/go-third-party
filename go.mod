@@ -30,6 +30,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/gomodule/redigo v1.8.5
 	github.com/google/gopacket v1.1.19
+	github.com/google/uuid v1.2.0
 	github.com/googollee/go-socket.io v1.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
@@ -37,6 +38,7 @@ require (
 	github.com/jcuga/golongpoll v1.3.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/labstack/echo v3.3.10+incompatible
+	github.com/lonng/nano v0.5.0
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible
 	github.com/minio/minio-go/v7 v7.0.11
 	github.com/mitchellh/mapstructure v1.2.2
@@ -60,6 +62,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tealeg/xlsx/v3 v3.2.4
 	github.com/teris-io/shortid v0.0.0-20201117134242-e59966efd125
+	github.com/urfave/cli v1.22.1
 	github.com/valyala/fasthttp v1.31.0
 	github.com/wangtuanjie/ip17mon v1.5.2
 	github.com/xtaci/kcp-go/v5 v5.6.1
@@ -101,6 +104,7 @@ require (
 	github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -127,7 +131,6 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.0.1 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
-	github.com/google/uuid v1.2.0 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
@@ -189,8 +192,10 @@ require (
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rogpeppe/fastuuid v1.2.0 // indirect
+	github.com/russross/blackfriday/v2 v2.0.1 // indirect
 	github.com/santhosh-tekuri/jsonschema v1.2.4 // indirect
 	github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa // indirect
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.0 // indirect
