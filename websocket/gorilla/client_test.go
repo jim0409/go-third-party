@@ -3,9 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
+	"testing"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -24,11 +23,21 @@ func connect(addr string) (*websocket.Conn, error) {
 type Client interface {
 	Connect() error
 	ReadPump()
+	PingLoop()
 }
 
 type wsClient struct {
 	Addr string
 	Conn *websocket.Conn
+}
+
+func (c *wsClient) Connect() error {
+	wsc, err := connect(c.Addr)
+	if err != nil {
+		return err
+	}
+	c.Conn = wsc
+	return nil
 }
 
 func (c *wsClient) ReadPump() {
@@ -44,13 +53,14 @@ func (c *wsClient) ReadPump() {
 
 }
 
-func (c *wsClient) Connect() error {
-	wsc, err := connect(c.Addr)
-	if err != nil {
-		return err
+func (c *wsClient) PingLoop() {
+	msg := "ping"
+	conn := c.Conn
+	ticker := time.NewTicker(1 * time.Second)
+	for tk := range ticker.C {
+		fmt.Println(tk)
+		conn.WriteMessage(websocket.TextMessage, []byte(msg))
 	}
-	c.Conn = wsc
-	return nil
 }
 
 func newWsClient(addr string) Client {
@@ -59,10 +69,10 @@ func newWsClient(addr string) Client {
 	}
 }
 
-func main() {
+func TestConnect(t *testing.T) {
 	var wsClients []Client
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 1; i++ {
 		c := newWsClient(addr)
 		if err := c.Connect(); err != nil {
 			log.Fatal(err)
@@ -71,26 +81,10 @@ func main() {
 	}
 
 	for _, j := range wsClients {
-		go j.ReadPump()
+		go j.PingLoop()
 	}
 
-	gracefulShutdown()
-
-}
-
-func gracefulShutdown() {
-	sigs := make(chan os.Signal, 1)
-	done := make(chan bool, 1)
-
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		sig := <-sigs
-		fmt.Println(sig)
-		done <- true
-	}()
-
-	fmt.Println("awaiting signal")
-	<-done
-	fmt.Println("exiting")
+	for _, j := range wsClients {
+		j.ReadPump()
+	}
 }

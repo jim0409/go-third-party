@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -27,14 +26,17 @@ func echo(c *websocket.Conn) {
 	if err := c.WriteJSON("hello world"); err != nil {
 		log.Println(err)
 	}
-	time.Sleep(time.Second)
+	// time.Sleep(time.Second)
 }
 
 func readMsg(c *websocket.Conn) {
-	_, msg, err := c.ReadMessage()
-	if err != nil && err != websocket.ErrCloseSent {
-		// log.Println("read:", err)
-		return
+	for {
+		_, msg, err := c.ReadMessage()
+		if err != nil && err != websocket.ErrCloseSent {
+			log.Println("read:", err)
+			return
+		}
+		// log.Printf("receive: %s\n", msg)
+		c.WriteMessage(websocket.TextMessage, msg)
 	}
-	log.Printf("receive: %s\n", msg)
 }
