@@ -58,6 +58,7 @@ func (c *wsClient) ReadPump() {
 		err = binary.Read(buf, binary.BigEndian, &header)
 		if err != nil {
 			log.Println("read header:", err)
+			return
 		}
 		buflen := buf.Len()
 		var body []byte
@@ -84,7 +85,7 @@ func (c *wsClient) PingLoop() {
 	ticker := time.NewTicker(1 * time.Second)
 	for tk := range ticker.C {
 		if c.login {
-			fmt.Println(tk)
+			// fmt.Println(tk)
 			buf := new(bytes.Buffer)
 			binary.Write(buf, binary.BigEndian, &msgHeader)
 			pingMsg := &msg.C_S_Ping{
@@ -132,17 +133,19 @@ func (c *wsClient) SetLogin() {
 
 func (c *wsClient) DealLogin(sid string) error {
 	data := &msg.C_S_TryReg{
-		Sid: proto.String(sid),
+		Lang:    proto.String("zh_CN"),
+		IsTrial: proto.Bool(false),
+		Sid:     proto.String(sid),
+		Ip:      proto.String("127.0.0.1_ok"),
 	}
 	sendData, err := proto.Marshal(data)
 	if err != nil {
 		return err
 	}
-	buf := &bytes.Buffer{}
+	buf := bytes.NewBuffer(sendData)
 
 	header := msg.MSG_HEADER_C_S_TRY_REG
 	binary.Write(buf, binary.BigEndian, &header)
-	buf.Write(sendData)
 
 	return c.Conn.WriteMessage(websocket.TextMessage, buf.Bytes())
 }
