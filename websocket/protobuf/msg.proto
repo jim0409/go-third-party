@@ -9,15 +9,10 @@ enum MSG_HEADER{
 }
 
 message C_S_TryReg {
-    optional string account = 1; // 账号
-    optional string passwd = 2; // 密码
-    optional bool isLogin = 3; // 是否登录
-    optional string lang = 4; // 客户端语言, chn: 简体中文, tw: 繁体中文, en: 英文, vn: 越南文, tha: 泰文
-    optional bool isTrial = 5; // 是否为试玩
-    optional fixed32 clientKind = 6; // 始终为CLIENT_KIND.CLIENT_WEB
-    optional string ag = 7; // 代理商账号
-    optional string sid = 8; // 从浏览器url中获取的sid参数
-    optional bool is3D = 9; // 是否为3D版本
+    required string sid = 1; // 从浏览器url中获取的sid参数
+    required string lang = 2; // 客户端语言, zh-CN: 简体中文, en-US: 英文
+    optional bool is3D = 3; // 是否为3D版本
+    optional fixed32 clientKind = 4; // 客户端类型
     optional fixed32 balance = 10; // 从token中获取的账户余额
     optional string sn = 11; // 厅主编码
     optional string ip = 12; // 客户端真实IP地址

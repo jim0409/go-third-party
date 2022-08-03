@@ -133,21 +133,22 @@ func (c *wsClient) SetLogin() {
 
 func (c *wsClient) DealLogin(sid string) error {
 	data := &msg.C_S_TryReg{
-		Lang:    proto.String("zh_CN"),
-		IsTrial: proto.Bool(false),
-		Sid:     proto.String(sid),
-		Ip:      proto.String("127.0.0.1_ok"),
+		Lang: proto.String("zh_CN"),
+		Sid:  proto.String(sid),
+		Ip:   proto.String("127.0.0.1_ok"),
 	}
 	sendData, err := proto.Marshal(data)
 	if err != nil {
+		log.Println("proto marshal err", err)
 		return err
 	}
-	buf := bytes.NewBuffer(sendData)
 
+	buf := new(bytes.Buffer)
 	header := msg.MSG_HEADER_C_S_TRY_REG
 	binary.Write(buf, binary.BigEndian, &header)
+	buf.Write(sendData)
 
-	return c.Conn.WriteMessage(websocket.TextMessage, buf.Bytes())
+	return c.Conn.WriteMessage(websocket.BinaryMessage, buf.Bytes())
 }
 
 func main() {
@@ -159,11 +160,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	log.Println(sid)
+
+	go c.PingLoop()
 	if err := c.DealLogin(sid); err != nil {
 		panic(err)
 	}
 	c.SetLogin()
-	go c.PingLoop()
+
 	c.ReadPump()
 
 }
