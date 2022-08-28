@@ -1,6 +1,7 @@
 package door
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/looplab/fsm"
@@ -23,13 +24,13 @@ func NewDoor(to string) *Door {
 			{Name: "close", Src: []string{"open"}, Dst: "closed"},
 		},
 		fsm.Callbacks{
-			"enter_state": func(e *fsm.Event) { d.enterState(e) },
+			"enter_state": func(_ctx context.Context, e *fsm.Event) { d.enterState(_ctx, e) },
 		},
 	)
 
 	return d
 }
 
-func (d *Door) enterState(e *fsm.Event) {
+func (d *Door) enterState(context context.Context, e *fsm.Event) {
 	fmt.Printf("The door to %s is %s\n", d.To, e.Dst)
 }

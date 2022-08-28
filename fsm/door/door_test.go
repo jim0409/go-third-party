@@ -1,6 +1,7 @@
 package door
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -11,11 +12,11 @@ import (
 func TestDoorFsm(t *testing.T) {
 	door := NewDoor("heaven")
 
-	err := door.FSM.Event("open")
+	err := door.FSM.Event(context.Background(), "open")
 	assert.Nil(t, err)
 	assert.Equal(t, "open", door.FSM.Current())
 
-	err = door.FSM.Event("close")
+	err = door.FSM.Event(context.Background(), "close")
 	assert.Nil(t, err)
 	assert.Equal(t, "closed", door.FSM.Current())
 }
@@ -46,10 +47,10 @@ func BenchmarkDoorFsm(b *testing.B) {
 	door := NewDoor("heaven")
 	for i := 0; i < b.N; i++ {
 		if door.FSM.Can("open") {
-			door.FSM.Event("open")
+			door.FSM.Event(context.Background(), "open")
 		}
 		if door.FSM.Can("close") {
-			door.FSM.Event("close")
+			door.FSM.Event(context.Background(), "close")
 		}
 	}
 }

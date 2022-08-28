@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/looplab/fsm"
@@ -18,16 +19,16 @@ func main() {
 
 	fmt.Println(fsm.Current())
 
-	// err := fsm.Event(context.Background(), "open")
-	err := fsm.Event(fsm.Current(), "open")
+	err := fsm.Event(context.Background(), "open")
+	// err := fsm.Event(fsm.Current(), "open")
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	fmt.Println(fsm.Current())
 
-	// err = fsm.Event(context.Background(), "close")
-	err = fsm.Event(fsm.Current(), "close")
+	err = fsm.Event(context.Background(), "close")
+	// err = fsm.Event(fsm.Current(), "close")
 	if err != nil {
 		fmt.Println(err)
 	}

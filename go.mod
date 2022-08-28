@@ -39,7 +39,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/lonng/nano v0.5.0
-	github.com/looplab/fsm v0.3.0
+	github.com/looplab/fsm v0.3.1-0.20220726110243-54bbb61e7a6c
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible
 	github.com/minio/minio-go/v7 v7.0.11
 	github.com/mitchellh/mapstructure v1.2.2
