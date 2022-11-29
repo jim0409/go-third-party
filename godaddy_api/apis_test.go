@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"testing"
-
-	"gotest.tools/assert"
 )
 
 func TestDomains(t *testing.T) {

@@ -1,6 +1,6 @@
 module go-third-party
 
-go 1.17
+go 1.19
 
 require (
 	github.com/Jeffail/gabs v1.4.0
@@ -88,7 +88,6 @@ require (
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/postgres v1.0.8
 	gorm.io/gorm v1.21.10
-	gotest.tools v2.2.0+incompatible
 	nhooyr.io/websocket v1.8.7
 )
 

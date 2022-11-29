@@ -2,8 +2,6 @@ package main
 
 import (
 	"testing"
-
-	"gotest.tools/assert"
 )
 
 func TestReadCsv(t *testing.T) {

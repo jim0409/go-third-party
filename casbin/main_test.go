@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/casbin/casbin/v2"
-	"gotest.tools/assert"
 )
 
 var e = &casbin.Enforcer{}
@@ -18,11 +17,11 @@ func TestCheck(t *testing.T) {
 }
 
 /*
-	BenchmarkCheck-16
-	78309 in 1.653s
-	15180 ns/op
-	7481 B/op
-	135 allocs/op
+BenchmarkCheck-16
+78309 in 1.653s
+15180 ns/op
+7481 B/op
+135 allocs/op
 */
 func BenchmarkCheck(b *testing.B) {
 	for i := 0; i <= b.N; i++ {
