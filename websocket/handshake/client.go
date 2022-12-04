@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"go-third-party/websocket/handshake/message"
 	"log"
 	"time"
 
@@ -12,18 +13,6 @@ import (
 
 type EvtType int
 
-const (
-	hi    EvtType = 0xf1
-	ackhi EvtType = 0xf2
-	ack   EvtType = 0xf3
-)
-
-type Message struct {
-	Type EvtType
-	Data []byte
-	Path string
-}
-
 func serialize(msg proto.Message) ([]byte, error) {
 	data, err := proto.Marshal(msg)
 	if err != nil {
@@ -32,15 +21,14 @@ func serialize(msg proto.Message) ([]byte, error) {
 	return data, nil
 }
 
-func wrapMessage(path string, msg proto.Message) (*Message, error) {
+func wrapMessage(path string, msg proto.Message) (*message.Message, error) {
 	data, err := serialize(msg)
 	if err != nil {
 		return nil, err
 	}
-	return &Message{
-		Type: hi,
+	return &message.Message{
+		Type: message.Notify,
 		Data: data,
-		Path: path,
 	}, nil
 }
 
