@@ -1,11 +1,10 @@
-package main
+package codec
 
 import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
-	"go-third-party/websocket/handshake/packet"
+	"go-third-party/websocket/message_enpack/packet"
 )
 
 type Action byte
@@ -21,50 +20,6 @@ const (
 	HeadLength    = 4
 	MaxPacketSize = 64 * 1024
 )
-
-var ErrWrongPacketType = errors.New("wrong packet type")
-
-// Protocol Frame
-// -<type>-|-------<lenght>-------|-<data>-
-// 1 byte packet type,
-// 3 bytes packet data length(big end), and data segment
-func CodecEncode(typ packet.Type, data []byte) ([]byte, error) {
-	if typ < Handshake || typ > Kick {
-		// return nil, ErrWrongPacketType
-		return nil, fmt.Errorf("wrong pkt")
-	}
-
-	p := &packet.Packet{
-		Type:    typ,
-		Length:  len(data),
-		Context: context.Background(),
-	}
-	buf := make([]byte, p.Length+HeadLength)
-	buf[0] = byte(p.Type)
-
-	copy(buf[1:HeadLength], intToBytes(p.Length))
-	copy(buf[HeadLength:], data)
-
-	return buf, nil
-}
-
-// Encode packet data length to bytes(Big end)
-func intToBytes(n int) []byte {
-	buf := make([]byte, 3)
-	buf[0] = byte((n >> 16) & 0xFF)
-	buf[1] = byte((n >> 8) & 0xFF)
-	buf[2] = byte(n & 0xFF)
-	return buf
-}
-
-// Decode packet data length byte to int(Big end)
-func bytesToInt(b []byte) int {
-	result := 0
-	for _, v := range b {
-		result = result<<8 + int(v)
-	}
-	return result
-}
 
 // ErrPacketSizeExcced is the error used for encode/decode.
 var ErrPacketSizeExcced = errors.New("codec: packet size exceed")
@@ -82,21 +37,6 @@ func NewDecoder() *Decoder {
 		buf:  bytes.NewBuffer(nil),
 		size: -1,
 	}
-}
-
-func (c *Decoder) forward() error {
-	header := c.buf.Next(HeadLength)
-	c.typ = header[0]
-	if c.typ < Handshake || c.typ > Kick {
-		return ErrWrongPacketType
-	}
-	c.size = bytesToInt(header[1:])
-
-	// packet length limitation
-	if c.size > MaxPacketSize {
-		return ErrPacketSizeExcced
-	}
-	return nil
 }
 
 // Decode decode the network bytes slice to packet.Packet(s)
@@ -143,4 +83,28 @@ func (c *Decoder) Decode(data []byte) ([]*packet.Packet, error) {
 	}
 
 	return packets, nil
+}
+
+func (c *Decoder) forward() error {
+	header := c.buf.Next(HeadLength)
+	c.typ = header[0]
+	if c.typ < Handshake || c.typ > Kick {
+		return ErrWrongPacketType
+	}
+	c.size = bytesToInt(header[1:])
+
+	// packet length limitation
+	if c.size > MaxPacketSize {
+		return ErrPacketSizeExcced
+	}
+	return nil
+}
+
+// Decode packet data length byte to int(Big end)
+func bytesToInt(b []byte) int {
+	result := 0
+	for _, v := range b {
+		result = result<<8 + int(v)
+	}
+	return result
 }

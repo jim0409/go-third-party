@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"go-third-party/websocket/handshake/message"
+	"go-third-party/websocket/message_enpack/message"
 	"log"
 	"time"
 
