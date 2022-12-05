@@ -13,7 +13,7 @@ var ErrWrongPacketType = errors.New("wrong packet type")
 // 1 byte packet type,
 // 3 bytes packet data length(big end), and data segment
 func Encode(typ packet.Type, data []byte) ([]byte, error) {
-	if typ < Handshake || typ > Kick {
+	if typ < packet.Handshake || typ > packet.Kick {
 		return nil, ErrWrongPacketType
 	}
 

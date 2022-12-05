@@ -7,16 +7,7 @@ import (
 	"go-third-party/websocket/message_enpack/packet"
 )
 
-type Action byte
-
 const (
-	_            Action = iota
-	Handshake           = 0x01 // 發起握手
-	HandshakeAck        = 0x02 // 發起握手ack
-	HeartBeat           = 0x03 // 心跳包
-	Data                = 0x04 // 資料包
-	Kick                = 0x05 // 伺服器踢出玩家
-
 	HeadLength    = 4
 	MaxPacketSize = 64 * 1024
 )
@@ -88,7 +79,7 @@ func (c *Decoder) Decode(data []byte) ([]*packet.Packet, error) {
 func (c *Decoder) forward() error {
 	header := c.buf.Next(HeadLength)
 	c.typ = header[0]
-	if c.typ < Handshake || c.typ > Kick {
+	if c.typ < packet.Handshake || c.typ > packet.Kick {
 		return ErrWrongPacketType
 	}
 	c.size = bytesToInt(header[1:])
