@@ -1,3 +1,2 @@
 # refer:
-- https://hasura.io/docs/latest/getting-started/docker-simple/
-- https://entgo.io/docs/getting-started/
+- https://github.com/graphql-go/graphql/tree/master/examples/http

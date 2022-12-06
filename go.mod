@@ -35,6 +35,7 @@ require (
 	github.com/googollee/go-socket.io v1.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
+	github.com/graphql-go/graphql v0.8.0
 	github.com/influxdata/influxdb v1.9.1
 	github.com/jcuga/golongpoll v1.3.0
 	github.com/jinzhu/gorm v1.9.16
