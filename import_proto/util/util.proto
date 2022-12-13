@@ -1,0 +1,8 @@
+syntax = "proto3";
+package util;
+
+option go_package = "./pkg";
+
+message UtilResponse {
+  string response = 1;
+}
