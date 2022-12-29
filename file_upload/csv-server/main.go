@@ -32,10 +32,10 @@ func BackUpFile(file io.Reader) {
 		fmt.Println(err)
 	}
 	defer tempFile.Close()
+	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fileBytes, err := ioutil.ReadAll(file)
 	tempFile.Write(fileBytes)
 }
 
