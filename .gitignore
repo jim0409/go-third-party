@@ -22,3 +22,6 @@ vendor
 
 # for rafe-apps example
 raftexample-*
+
+# for chunk files
+chunks-*
