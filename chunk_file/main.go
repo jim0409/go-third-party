@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -10,8 +11,9 @@ import (
 	"github.com/google/uuid"
 )
 
+var readerChunk = 2
+
 func main() {
-	split := 4
 
 	file, err := os.Open("file.txt")
 	if err != nil {
@@ -19,6 +21,25 @@ func main() {
 	}
 	defer file.Close()
 
+	reader := bufio.NewReader(file)
+	s := make([]byte, readerChunk)
+	var count int
+	for {
+		n, err := reader.Read(s)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Println("== err ==", err)
+			break
+		}
+		count++
+		str := string(s[:n])
+		fmt.Printf("%d _ str[%d]: %v\n", count, n, str)
+	}
+}
+
+func chunkFiles(split int, file *os.File) {
 	scanner := bufio.NewScanner(file)
 	texts := make([]string, 0)
 	for scanner.Scan() {
