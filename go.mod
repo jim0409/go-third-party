@@ -11,6 +11,7 @@ require (
 	github.com/alicebob/miniredis v2.5.0+incompatible
 	github.com/appleboy/graceful v0.0.4
 	github.com/arangodb/go-driver v0.0.0-20210602123439-e63cef3dc348
+	github.com/astaxie/beego v1.12.3
 	github.com/aws/aws-lambda-go v1.24.0
 	github.com/bluele/slack v0.0.0-20180528010058-b4b4d354a079
 	github.com/casbin/casbin/v2 v2.31.3
@@ -29,7 +30,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/golang/mock v1.5.0
 	github.com/golang/protobuf v1.5.2
-	github.com/gomodule/redigo v1.8.5
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/gopacket v1.1.19
 	github.com/google/uuid v1.3.0
 	github.com/googollee/go-socket.io v1.6.0
@@ -42,7 +43,7 @@ require (
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/lonng/nano v0.5.0
 	github.com/looplab/fsm v0.3.1-0.20220726110243-54bbb61e7a6c
-	github.com/mattn/go-sqlite3 v2.0.1+incompatible
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/minio/minio-go/v7 v7.0.11
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/montanaflynn/stats v0.6.6
@@ -140,6 +141,7 @@ require (
 	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
+	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.8.0 // indirect
@@ -204,6 +206,7 @@ require (
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/santhosh-tekuri/jsonschema v1.2.4 // indirect
 	github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa // indirect
+	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.0 // indirect
