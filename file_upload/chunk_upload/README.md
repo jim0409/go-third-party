@@ -20,4 +20,5 @@
 
 
 # refer:
-- 
+- https://wangbjun.site/2020/coding/golang/file-md5.html
+- https://www.kancloud.cn/digest/batu-go/153538
