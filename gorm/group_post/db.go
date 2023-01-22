@@ -47,6 +47,8 @@ func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
 
 	err = db.AutoMigrate(
 		&Member{},
+		&Group{},
+		&GroupMember{},
 		&Post{},
 	)
 	if err != nil {

@@ -19,21 +19,21 @@ type Member struct {
 
 // 紀錄社團資訊
 type Group struct {
-	ID           int      `gorm:"primaryKey;autoIncrement;"`
-	Name         string   `gorm:"unique;type:varchar(32);comment:群組名稱"`
-	Owner        string   `gorm:"type:varchar(32);comment:群組創建者"`
-	Members      []Member `gorm:"many2many:group_members;"`
-	AwaitMembers []Member `gorm:"many2many:group_members;"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    gorm.DeletedAt
+	ID        int      `gorm:"primaryKey;autoIncrement;"`
+	Name      string   `gorm:"unique;type:varchar(32);comment:群組名稱"`
+	Owner     string   `gorm:"type:varchar(32);comment:群組創建者"`
+	Members   []Member `gorm:"many2many:group_members;"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt
 }
 
 // 紀錄社團內每個人的身分
 type GroupMember struct {
 	GroupID  int    `gorm:"primaryKey"`
 	MemberID int    `gorm:"primaryKey"`
-	Role     string `gorm:"type:tinyint(8);comment:腳色"`
+	Role     string `gorm:"type:tinyint(8);default:0;comment:腳色"`
+	Join     bool   `gorm:"type:tinyint(8);default:0;comment:加入狀態, 0:未加入, 1:已加入"`
 }
 
 // 紀錄貼文

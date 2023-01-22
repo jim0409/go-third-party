@@ -39,11 +39,11 @@ func TestNewGroup(t *testing.T) {
 	db := MockInit()
 	defer db.Closed()
 
-	err := db.NewGroup("jim1", "group1")
+	err := db.NewGroup(1, "group1")
 	assert.Nil(t, err)
-	err = db.NewGroup("jim2", "group1")
+	err = db.NewGroup(2, "group1")
 	assert.NotNil(t, err)
-	err = db.NewGroup("jim3", "group1")
+	err = db.NewGroup(3, "group1")
 	assert.NotNil(t, err)
 }
 
