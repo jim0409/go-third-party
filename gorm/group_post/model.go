@@ -19,13 +19,14 @@ type Member struct {
 
 // 紀錄社團資訊
 type Group struct {
-	ID        int      `gorm:"primaryKey;autoIncrement;"`
-	Name      string   `gorm:"unique;type:varchar(32);comment:群組名稱"`
-	Owner     string   `gorm:"type:varchar(32);comment:群組創建者"`
-	Members   []Member `gorm:"many2many:group_members;"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	ID           int      `gorm:"primaryKey;autoIncrement;"`
+	Name         string   `gorm:"unique;type:varchar(32);comment:群組名稱"`
+	Owner        string   `gorm:"type:varchar(32);comment:群組創建者"`
+	Members      []Member `gorm:"many2many:group_members;"`
+	AwaitMembers []Member `gorm:"many2many:group_members;"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    gorm.DeletedAt
 }
 
 // 紀錄社團內每個人的身分
@@ -82,14 +83,12 @@ func (db *Operation) GetMemberViaListIds(list []int) (*[]Member, error) {
 }
 
 // 定義功能
-
 // 會員的 Interface
 type IMember interface {
 	NewMember(name string, idfy string) error
-	AddMembersToGroup(id int, list []int) error
 }
 
-// NewMember: 增加新成員
+// NewMember: 增加新成員; idfy: bcrypt endcoding
 func (db *Operation) NewMember(name string, idfy string) error {
 	m := &Member{
 		Nickname:   name,
@@ -101,28 +100,46 @@ func (db *Operation) NewMember(name string, idfy string) error {
 
 // 社團的 Interface
 type IGroup interface {
-	NewGroup(owner string, name string) error
+	NewGroup(userId int, name string) error
+	UpdateGroup(usrId int, gp *Group) error
+	ApplyForGroup(userId int, groupId int) error
+	AwaitJoinGroupList(groupId int) ([]int, error)
+	AddMembersToGroup(groupId int, memberList []int) error
+	KickMemberOutOfGroup(groupId int, memberList []int) error
+	ShareGroupLink(groupId int) (string, error)
 }
 
 // NewGroup: 創建一個新的 group
-func (db *Operation) NewGroup(owner string, name string) error {
+func (db *Operation) NewGroup(userId int, name string) error {
 	// 1. check user id, if member not existed return err
-	m, err := db.GetMemberViaNickname(owner)
+	m, err := db.GetMemberViaId(userId)
 	if err != nil {
 		return err
 	}
 
 	// 2. assign member into initial value and create new group
 	gp := &Group{
-		Owner:   owner,
+		Owner:   m.Nickname,
 		Name:    name,
 		Members: []Member{*m},
 	}
 	return db.DB.Table("groups").Create(gp).Error
 }
 
-// AddMemberToGroup: 增加 group 成員
-func (db *Operation) AddMembersToGroup(id int, list []int) error {
+func (db *Operation) UpdateGroup(usrId int, gp *Group) error {
+	return nil
+}
+
+func (db *Operation) ApplyForGroup(userId int, groupId int) error {
+	return nil
+}
+
+func (db *Operation) AwaitJoinGroupList(groupId int) ([]int, error) {
+	return nil, nil
+}
+
+// AddMembersToGroup: 增加 group 成員
+func (db *Operation) AddMembersToGroup(groupId int, list []int) error {
 	// 1. retrieve all the members in list
 	members, err := db.GetMemberViaListIds(list)
 	if err != nil {
@@ -130,17 +147,26 @@ func (db *Operation) AddMembersToGroup(id int, list []int) error {
 	}
 	// 2. updates group_members via groups index
 	gp := &Group{
-		ID:      id,
+		ID:      groupId,
 		Members: *members,
 	}
 
 	return db.DB.Table("groups").Updates(gp).Error
 }
 
+func (db *Operation) KickMemberOutOfGroup(groupId int, memberList []int) error {
+	return nil
+}
+
+func (db *Operation) ShareGroupLink(groupId int) (string, error) {
+	return "", nil
+}
+
 // 貼文的 Interface
 type IPost interface {
-	NewPost(int, *Post) error
-	UpdatePost(int, *Post) error
+	NewPost(usrId int, p *Post) error
+	UpdatePost(usrId int, p *Post) error
+	SharePostLink(postId int) (string, error)
 }
 
 // NewPost: 增加一篇貼文; 需要再使用前，先檢查 post 的內容以及對應的
@@ -164,4 +190,8 @@ func (db *Operation) UpdatePost(usrId int, p *Post) error {
 	p.Editor = m.Nickname
 
 	return db.DB.Table("posts").Updates(p).Where("id = ?", p.ID).Error
+}
+
+func (db *Operation) SharePostLink(postId int) (string, error) {
+	return "", nil
 }
