@@ -47,6 +47,15 @@ func TestNewGroup(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+func TestApplyMembersToGroup(t *testing.T) {
+	db := MockInit()
+	defer db.Closed()
+	err := db.ApplyForGroup(1, 2)
+	assert.Nil(t, err)
+	err = db.ApplyForGroup(1, 3)
+	assert.Nil(t, err)
+}
+
 func TestAddMembersToGroup(t *testing.T) {
 	db := MockInit()
 	defer db.Closed()

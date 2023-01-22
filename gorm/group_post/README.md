@@ -33,7 +33,7 @@ type IMember interface {
 type IGroup interface {
 	NewGroup(userId int, name string) error
 	UpdateGroup(usrId int, gp *Group) error
-	ApplyForGroup(userId int, groupId int) error
+	ApplyForGroup(groupId int, userId int) error
 	AwaitJoinGroupList(groupId int) ([]int, error)
 	AddMembersToGroup(groupId int, memberList []int) error
 	KickMemberOutOfGroup(groupId int, memberList []int) error
