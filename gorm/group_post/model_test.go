@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"testing"
 
@@ -90,4 +91,21 @@ func TestUpdatePost(t *testing.T) {
 	}
 	err := db.UpdatePost(usrId, p)
 	assert.Nil(t, err)
+}
+
+func TestSharePost(t *testing.T) {
+	db := MockInit()
+	defer db.Closed()
+	err := db.CopyGroupPost(3, 1, 1)
+	assert.Nil(t, err)
+}
+
+func TestGetGroupPost(t *testing.T) {
+	db := MockInit()
+	defer db.Closed()
+	posts, err := db.GetGroupPost(1)
+	assert.Nil(t, err)
+	for _, post := range *posts {
+		fmt.Println(post.ID)
+	}
 }

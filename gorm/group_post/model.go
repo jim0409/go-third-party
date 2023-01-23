@@ -43,6 +43,7 @@ type Post struct {
 	ID        int    `gorm:"primaryKey;autoIncrement;"`
 	Owner     string `gorm:"type:varchar(32);comment:發文者"`
 	Editor    string `gorm:"type:varchar(32);comment:編輯者"`
+	Sharer    string `gorm:"type:varchar(32);comment:分享者"`
 	Content   string `gorm:"type:varchar(255);comment:內容"`
 	LikeNum   int    `gorm:"type:tinyint(8);comment:喜歡數"`
 	HeartNum  int    `gorm:"type:tinyint(8);comment:愛心數"`
@@ -235,8 +236,10 @@ func (db *Operation) ShareGroupLink(groupId int) (string, error) {
 // 貼文的 Interface
 type IPost interface {
 	NewPost(usrId int, p *Post) error
+	GetGroupPost(groupId int) (*[]Post, error)
 	UpdatePost(usrId int, p *Post) error
 	SharePostLink(postId int) (string, error)
+	CopyGroupPost(usrId int, postId int, dstGroupId int) error
 }
 
 // NewPost: 增加一篇貼文; 需要再使用前，先檢查 post 的內容以及對應的
@@ -245,9 +248,23 @@ func (db *Operation) NewPost(usrId int, p *Post) error {
 	if err != nil {
 		return err
 	}
-	p.Owner = m.Nickname
+
+	// if post owner empty, use usr as owner
+	if p.Owner == "" {
+		p.Owner = m.Nickname
+	}
 
 	return db.DB.Table("posts").Create(p).Error
+}
+
+// GetGroupPost: 獲取當前群組的貼文
+func (db *Operation) GetGroupPost(groupId int) (*[]Post, error) {
+	posts := &[]Post{}
+	err := db.DB.Table("posts").Select("*").Where("group_id = ?", groupId).Scan(posts).Error
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
 // UpdatePost: 更新貼文; 不改變 sharelink, 不改 like/ disklike 數
@@ -268,4 +285,22 @@ func (db *Operation) SharePostLink(postId int) (string, error) {
 		return "", err
 	}
 	return p.ShareUrl, nil
+}
+
+func (db *Operation) CopyGroupPost(usrId int, postId int, dstGroupId int) error {
+	p, err := db.GetPostViaId(postId)
+	if err != nil {
+		return err
+	}
+
+	usr, err := db.GetMemberViaId(usrId)
+	if err != nil {
+		return err
+	}
+
+	p.GroupID = dstGroupId
+	p.Sharer = usr.Nickname
+	p.ID = 0 // reset primaryKey id
+
+	return db.NewPost(usrId, p)
 }

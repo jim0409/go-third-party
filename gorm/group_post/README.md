@@ -44,8 +44,10 @@ type IGroup interface {
 - 貼文
 ```go
 type IPost interface {
-	NewPost(int, *Post) error
-	UpdatePost(int, *Post) error
-	SharePostLink(int) (string,error)
+	NewPost(usrId int, p *Post) error
+	GetGroupPost(groupId int) (*[]Post, error)
+	UpdatePost(usrId int, p *Post) error
+	SharePostLink(postId int) (string, error)
+	CopyGroupPost(usrId int, postId int, dstGroupId int) error
 }
 ```
