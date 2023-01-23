@@ -73,6 +73,7 @@ func TestAddNewPost(t *testing.T) {
 	defer db.Closed()
 	usrId := 1
 	p := &Post{
+		GroupID: 1,
 		Content: "test content",
 	}
 	err := db.NewPost(usrId, p)

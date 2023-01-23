@@ -47,6 +47,8 @@ type Post struct {
 	LikeNum   int    `gorm:"type:tinyint(8);comment:喜歡數"`
 	HeartNum  int    `gorm:"type:tinyint(8);comment:愛心數"`
 	ShareUrl  string `gorm:"type:varchar(255);comment:網址"`
+	GroupID   int    `gorm:"type:tinyint(8);comment:所屬群組"`
+	Group     Group  `gorm:"foreignKey:GroupID"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
