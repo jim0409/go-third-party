@@ -5,6 +5,7 @@
 
 # 功能介紹
 1. 創建會員 .. <IMember>
+2. 獲取會員的社團 .. <IMember>
 
 1. 創建社團 .. <IGroup>
 2. 修改社團資訊 .. <IGroup>
@@ -15,8 +16,10 @@
 7. 分享社團連結 .. <IPost>
 
 1. 社團發文 .. <IPost>
-2. 修改社團發文 .. <IPost>
-3. 分享社團發文連結 .. <IPost>
+2. 獲取該社團的所有發文 .. <IPost>
+3. 修改社團發文 .. <IPost>
+4. 分享社團發文連結 .. <IPost>
+5. 轉發社團發文 .. <IPost>
 
 
 # 實現功能
@@ -25,6 +28,7 @@
 ```go
 type IMember interface {
 	NewMember(name string, idfy string) error
+	GetMemberGroupIndexs(usrId int) (*[]int, error)
 }
 ```
 

@@ -109,6 +109,7 @@ func (db *Operation) GetPostViaId(postId int) (*Post, error) {
 // 會員的 Interface
 type IMember interface {
 	NewMember(name string, idfy string) error
+	GetMemberGroupIndexs(usrId int) (*[]int, error)
 }
 
 // NewMember: 增加新成員; idfy: bcrypt endcoding
@@ -119,6 +120,17 @@ func (db *Operation) NewMember(name string, idfy string) error {
 		GroupInfos: nil,
 	}
 	return db.DB.Table("members").Create(m).Error
+}
+
+// GetMemberGroupIndexs: 獲取該成員的所有社團訊息
+func (db *Operation) GetMemberGroupIndexs(usrId int) (*[]int, error) {
+	gpIds := &[]int{}
+	err := db.DB.Table("group_members").Select("group_id").Where("member_id = ?", usrId).Scan(gpIds).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return gpIds, nil
 }
 
 // 社團的 Interface

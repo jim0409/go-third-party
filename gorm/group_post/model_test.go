@@ -46,6 +46,9 @@ func TestNewGroup(t *testing.T) {
 	assert.NotNil(t, err)
 	err = db.NewGroup(3, "group1")
 	assert.NotNil(t, err)
+
+	err = db.NewGroup(1, "group2")
+	assert.Nil(t, err)
 }
 
 func TestApplyMembersToGroup(t *testing.T) {
@@ -108,4 +111,12 @@ func TestGetGroupPost(t *testing.T) {
 	for _, post := range *posts {
 		fmt.Println(post.ID)
 	}
+}
+
+func TestGetMemberGroups(t *testing.T) {
+	db := MockInit()
+	defer db.Closed()
+	gps, err := db.GetMemberGroupIndexs(1)
+	assert.Nil(t, err)
+	fmt.Println(gps)
 }
