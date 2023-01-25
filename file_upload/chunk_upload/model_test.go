@@ -27,11 +27,11 @@ func MockInit() OPDB {
 func TestInsertOneRecord(t *testing.T) {
 	db := MockInit()
 	defer db.Closed()
-	id, err := db.InsertOneRecord("jim", "file1", "123", 1)
+	id, err := db.InsertOneRecord("jim", "file1", "123", 100, 1)
 	assert.Nil(t, err)
 	assert.Equal(t, id, 1)
 
-	_, err = db.InsertOneRecord("jim", "file1", "123", 1)
+	_, err = db.InsertOneRecord("jim", "file1", "123", 100, 1)
 	assert.NotNil(t, err)
 }
 
@@ -51,6 +51,6 @@ func TestUpdateFileDetails(t *testing.T) {
 	db := MockInit()
 	defer db.Closed()
 
-	err := db.UpdateFileDetails("123", "file1", true)
+	err := db.UpdateFileDetails("123", "file1", "file1-000.png.bak", true)
 	assert.Nil(t, err)
 }

@@ -10,6 +10,8 @@ type FileUploadDetail struct {
 	ID              int    `gorm:"primaryKey;autoIncrement;"`
 	Username        string `gorm:"type:varchar(32);comment:使用者名稱"`
 	FileName        string `gorm:"index;type:varchar(64);comment:檔案名稱"`
+	Size            int64  `gorm:"type:int(64);comment:檔案大小"`
+	ChunkFilename   string `gorm:"unique;type:varchar(64);伺服器端分片的檔案名稱"`
 	Md5             string `gorm:"unique;index;type:varchar(255);md5值"`
 	IsUploaded      int    `gorm:"type:tinyint(8);default:0;comment:0,還沒上傳 1,已上傳"`
 	TotalChunks     int    `gorm:"type:tinyint(8);default:0;comment:總分片數"`
@@ -21,16 +23,17 @@ type FileUploadDetail struct {
 }
 
 type IFileUploadDetail interface {
-	InsertOneRecord(usrname string, filename string, md5 string, totalchunks int) (int, error)
+	InsertOneRecord(usrname string, filename string, md5 string, size int64, totalchunks int) (int, error)
 	FindUploadDetailByFileName(md5 string, filename string) (*FileUploadDetail, error)
-	UpdateFileDetails(md5 string, filename string, uploaded bool) error
+	UpdateFileDetails(md5 string, filename string, chunkfilename string, uploaded bool) error
 }
 
 // InsertOneRecord: 保存一條紀錄
-func (db *Operation) InsertOneRecord(usrname string, filename string, md5 string, totalchunks int) (int, error) {
+func (db *Operation) InsertOneRecord(usrname string, filename string, md5 string, size int64, totalchunks int) (int, error) {
 	file := &FileUploadDetail{
 		Username:    usrname,
 		FileName:    filename,
+		Size:        size,
 		Md5:         md5,
 		TotalChunks: totalchunks,
 	}
@@ -52,7 +55,7 @@ func (db *Operation) FindUploadDetailByFileName(md5 string, filename string) (*F
 }
 
 // UpdateFileDetails: 更新上傳檔案細節
-func (db *Operation) UpdateFileDetails(md5 string, filename string, uploaded bool) error {
+func (db *Operation) UpdateFileDetails(md5 string, filename string, chunkfilename string, uploaded bool) error {
 	file, err := db.FindUploadDetailByFileName(md5, filename)
 	if err != nil {
 		return err
@@ -61,6 +64,7 @@ func (db *Operation) UpdateFileDetails(md5 string, filename string, uploaded boo
 	if uploaded {
 		file.IsUploaded = 1
 		file.HasBeenUploaded = "yes"
+		file.ChunkFilename = chunkfilename
 	}
 
 	return db.DB.Table("file_upload_details").Updates(file).Where("md5 = ? AND file_name = ?", file.Md5, file.FileName).Error
