@@ -18,9 +18,28 @@ func UploadFile(c *gin.Context) {
 	// TODO: retrieve user from JWT
 	// TODO: retrieve chunk num from query params
 	// TODO: retrieve request md5 from query params, check md5 before save another chunk file
-	md5value := "6b30e67b0802c65a0e87cbddddb49c6f"
-	usrname := "demousr"
-	filename := "thumbnail_image020.png"
+
+	// md5value := "9176b139835b4888ef37776bfdeefab6"
+	md5value := c.Query("md5value")
+	if md5value == "" {
+		c.JSON(400, "lack of md5value!")
+		return
+	}
+
+	// filename := "docker-compose.yml"
+	filename := c.Query("filename")
+	if filename == "" {
+		c.JSON(400, "lack of filename!")
+		return
+	}
+
+	// username := "jim"
+	username := c.GetHeader("username")
+	if username == "" {
+		c.JSON(400, "lack of username!")
+		return
+	}
+
 	uploadfile, err := opdb.FindUploadDetailByFileName(md5value, filename)
 	if err != nil {
 		c.JSON(404, fmt.Sprintf("Failed to Uploaded File %v", err))
@@ -36,6 +55,7 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
+	// TODO: if size over restrict, return upload error msg
 	file, handler, err := r.FormFile("myFile")
 	if err != nil {
 		fmt.Printf("Error Retrieving the File %v\n", err)
@@ -44,7 +64,7 @@ func UploadFile(c *gin.Context) {
 	defer file.Close()
 
 	size := handler.Size
-	id, err := BackUpFile(file, usrname, handler.Filename, md5value, size, 1)
+	id, err := BackUpFile(file, username, handler.Filename, md5value, size, 1)
 	if err != nil {
 		c.JSON(404, fmt.Sprintf("Failed to Uploaded File %v", err))
 		return
@@ -89,7 +109,7 @@ func BackUpFile(file io.Reader, usrname string, filename string, md5value string
 	}
 
 	if newmd5value != md5value {
-		return 0, fmt.Errorf("pls purge file %v\n", filename)
+		return 0, fmt.Errorf("pls purge file %v origin md5 %v, with new_md5 %v", filename, md5value, newmd5value)
 	}
 
 	err = opdb.UpdateFileDetails(md5value, filename, tempFile.Name(), true)
