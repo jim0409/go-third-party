@@ -51,6 +51,6 @@ func TestUpdateFileDetails(t *testing.T) {
 	db := MockInit()
 	defer db.Closed()
 
-	err := db.UpdateFileDetails("123", "file1", "file1-000.png.bak", true)
+	err := db.UpdateFileDetails("123", "file1", "file1-000.png.bak", 1)
 	assert.Nil(t, err)
 }

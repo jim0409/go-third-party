@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,24 +17,48 @@ func UploadFile(c *gin.Context) {
 	r.ParseMultipartForm(10 << 20)
 
 	// TODO: retrieve user from JWT
-	// TODO: retrieve chunk num from query params
-	// TODO: retrieve request md5 from query params, check md5 before save another chunk file
+	// verified upload permission
 
-	// md5value := "9176b139835b4888ef37776bfdeefab6"
+	// md5value
 	md5value := c.Query("md5value")
 	if md5value == "" {
 		c.JSON(400, "lack of md5value!")
 		return
 	}
 
-	// filename := "docker-compose.yml"
+	// filename
 	filename := c.Query("filename")
 	if filename == "" {
 		c.JSON(400, "lack of filename!")
 		return
 	}
 
-	// username := "jim"
+	// totalchunks
+	stotalchunks := c.Query("totalchunks")
+	if stotalchunks == "" {
+		c.JSON(400, "lack of totalchunks!")
+		return
+	}
+
+	totalchunks, err := strconv.Atoi(stotalchunks)
+	if err != nil {
+		c.JSON(400, fmt.Sprintf("convert totalchunks err %v!", err))
+		return
+	}
+
+	// chunkorder
+	schunkorder := c.Query("chunkorder")
+	if schunkorder == "" {
+		c.JSON(400, "lack of chunkorder!")
+		return
+	}
+	chunkorder, err := strconv.Atoi(schunkorder)
+	if err != nil {
+		c.JSON(400, fmt.Sprintf("convert chunkorder err %v!", err))
+		return
+	}
+
+	// username
 	username := c.GetHeader("username")
 	if username == "" {
 		c.JSON(400, "lack of username!")
@@ -64,7 +89,7 @@ func UploadFile(c *gin.Context) {
 	defer file.Close()
 
 	size := handler.Size
-	id, err := BackUpFile(file, username, handler.Filename, md5value, size, 1)
+	id, err := BackUpFile(file, username, handler.Filename, md5value, size, chunkorder, totalchunks)
 	if err != nil {
 		c.JSON(404, fmt.Sprintf("Failed to Uploaded File %v", err))
 		return
@@ -75,13 +100,12 @@ func UploadFile(c *gin.Context) {
 		"id":       id,
 		"filename": fmt.Sprintf("Uploaded File: %+v", handler.Filename),
 		"size":     fmt.Sprintf("File Size: %+v", handler.Size),
-		// "header":   fmt.Sprintf("MIME Header: %+v", handler.Header),
 	})
 }
 
-func BackUpFile(file io.Reader, usrname string, filename string, md5value string, size int64, chunknum int) (int, error) {
+func BackUpFile(file io.Reader, usrname string, filename string, md5value string, size int64, chunknum int, totalchunk int) (int, error) {
 
-	id, err := opdb.InsertOneRecord(usrname, filename, md5value, size, chunknum)
+	id, err := opdb.InsertOneRecord(usrname, filename, md5value, size, totalchunk)
 	if err != nil {
 		return 0, err
 	}
@@ -112,7 +136,7 @@ func BackUpFile(file io.Reader, usrname string, filename string, md5value string
 		return 0, fmt.Errorf("pls purge file %v origin md5 %v, with new_md5 %v", filename, md5value, newmd5value)
 	}
 
-	err = opdb.UpdateFileDetails(md5value, filename, tempFile.Name(), true)
+	err = opdb.UpdateFileDetails(md5value, filename, tempFile.Name(), chunknum)
 	if err != nil {
 		return 0, err
 	}
@@ -135,5 +159,4 @@ func FileMD5(file *os.File) (string, error) {
 }
 
 func MergeFile(c *gin.Context) {
-
 }
