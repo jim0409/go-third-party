@@ -70,6 +70,7 @@ func UploadFile(c *gin.Context) {
 		c.JSON(404, fmt.Sprintf("Failed to Uploaded File %v", err))
 		return
 	}
+
 	if uploadfile.ID != 0 {
 		c.JSON(200, gin.H{
 			"status":   "success",
@@ -103,31 +104,32 @@ func UploadFile(c *gin.Context) {
 	})
 }
 
-func BackUpFile(file io.Reader, usrname string, filename string, md5value string, size int64, chunknum int, totalchunk int) (int, error) {
-
-	id, err := opdb.InsertOneRecord(usrname, filename, md5value, size, totalchunk)
+func BackUpFile(file io.Reader, username string, filename string, md5value string, size int64, chunknum int, totalchunk int) (int, error) {
+	id, err := opdb.InsertOneRecord(username, filename, md5value, size, totalchunk)
 	if err != nil {
 		return 0, err
 	}
 
-	// after check file status, not exsited and save another tmpFile
-	tempFile, err := ioutil.TempFile("files", fmt.Sprintf("upload-*-%s.backup", filename)) // `*` 會隨機產生一個亂序 id
-	if err != nil {
-		return 0, err
-	}
-	defer tempFile.Close()
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		return 0, err
 	}
 
-	_, err = tempFile.Write(fileBytes)
+	chunkFileName := fmt.Sprintf("files/%s_%s_%d_%d", username, filename, totalchunk, chunknum)
+
+	f, err := os.Create(chunkFileName)
+	if err != nil {
+		return 0, err
+	}
+	defer f.Close()
+
+	_, err = f.Write(fileBytes)
 	if err != nil {
 		return 0, err
 	}
 
 	// can't use tempFile since in memory bytes differ from file md5
-	newmd5value, err := LoadFileMD5(tempFile.Name())
+	newmd5value, err := LoadFileMD5(chunkFileName)
 	if err != nil {
 		return 0, err
 	}
@@ -136,7 +138,7 @@ func BackUpFile(file io.Reader, usrname string, filename string, md5value string
 		return 0, fmt.Errorf("pls purge file %v origin md5 %v, with new_md5 %v", filename, md5value, newmd5value)
 	}
 
-	err = opdb.UpdateFileDetails(md5value, filename, tempFile.Name(), chunknum)
+	err = opdb.UpdateFileDetails(md5value, filename, chunkFileName, chunknum)
 	if err != nil {
 		return 0, err
 	}
@@ -159,4 +161,26 @@ func FileMD5(file *os.File) (string, error) {
 }
 
 func MergeFile(c *gin.Context) {
+}
+
+func MergeChunkFiles(filename string, chunkfiles []string) error {
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	for _, chunkfile := range chunkfiles {
+		chunkbytes, err := os.ReadFile(chunkfile)
+		if err != nil {
+			return err
+		}
+
+		_, err = f.Write(chunkbytes)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -54,3 +54,32 @@ func TestUpdateFileDetails(t *testing.T) {
 	err := db.UpdateFileDetails("123", "file1", "file1-000.png.bak", 1)
 	assert.Nil(t, err)
 }
+
+func TestFindUploadDetailById(t *testing.T) {
+	db := MockInit()
+	defer db.Closed()
+
+	ids := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	files, err := db.FindUploadDetailById(ids)
+	assert.Nil(t, err)
+	for _, file := range *files {
+		fmt.Println(file)
+	}
+}
+
+func TestMergeFiles(t *testing.T) {
+	filename := "files/auto.mp4"
+	chunkfiles := []string{
+		"files/jim_split-auto.mp4aa_8_1",
+		"files/jim_split-auto.mp4ab_8_2",
+		"files/jim_split-auto.mp4ac_8_3",
+		"files/jim_split-auto.mp4ad_8_4",
+		"files/jim_split-auto.mp4ae_8_5",
+		"files/jim_split-auto.mp4af_8_6",
+		"files/jim_split-auto.mp4ag_8_7",
+		"files/jim_split-auto.mp4ah_8_8",
+	}
+
+	err := MergeChunkFiles(filename, chunkfiles)
+	assert.Nil(t, err)
+}

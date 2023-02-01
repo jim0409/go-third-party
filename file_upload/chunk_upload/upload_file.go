@@ -27,6 +27,7 @@ type IFileUploadDetail interface {
 	InsertOneRecord(usrname string, filename string, md5 string, size int64, totalchunks int) (int, error)
 	FindUploadDetailByFileName(md5 string, filename string) (*FileUploadDetail, error)
 	UpdateFileDetails(md5 string, filename string, chunkfilename string, chunknum int) error
+	FindUploadDetailById(ids []int) (*[]string, error)
 }
 
 // InsertOneRecord: 保存一條紀錄
@@ -68,4 +69,17 @@ func (db *Operation) UpdateFileDetails(md5 string, filename string, chunkfilenam
 	file.UidFile = "todo - need to specified the upload file name"
 
 	return db.DB.Table("file_upload_details").Updates(file).Where("md5 = ? AND file_name = ?", file.Md5, file.FileName).Error
+}
+
+// FindUploadDetailById: 根據 id 查詢文件
+func (db *Operation) FindUploadDetailById(ids []int) (*[]string, error) {
+	files := &[]string{}
+	err := db.DB.Table("file_upload_details").
+		Select("chunk_filename").
+		Where("id IN ?", ids).Scan(files).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
 }
