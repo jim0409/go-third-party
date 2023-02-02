@@ -1,6 +1,7 @@
 #!/bin/bash
 
 file=$1
+file=${file%??} # 去掉最後兩個字元
 order=$2
 total=$3
 md5_value=`md5 $file | awk '{print $4}'`

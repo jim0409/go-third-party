@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -90,7 +91,7 @@ func UploadFile(c *gin.Context) {
 	defer file.Close()
 
 	size := handler.Size
-	id, err := BackUpFile(file, username, handler.Filename, md5value, size, chunkorder, totalchunks)
+	id, err := BackUpFile(file, username, filename, md5value, size, chunkorder, totalchunks)
 	if err != nil {
 		c.JSON(404, fmt.Sprintf("Failed to Uploaded File %v", err))
 		return
@@ -160,18 +161,64 @@ func FileMD5(file *os.File) (string, error) {
 	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
-func MergeFile(c *gin.Context) {
+type ChunkFileMd5Value struct {
+	Md5Values []string `json:"chunk_file_md5"`
 }
 
-func MergeChunkFiles(filename string, chunkfiles []string) error {
-	f, err := os.Create(filename)
+func MergeFile(c *gin.Context) {
+	// filename
+	filename := c.Query("filename")
+	if filename == "" {
+		c.JSON(400, "lack of filename!")
+		return
+	}
+
+	// username
+	username := c.GetHeader("username")
+	if username == "" {
+		c.JSON(400, "lack of username!")
+		return
+	}
+
+	chunkmd5s := ChunkFileMd5Value{}
+	bs, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	err = json.Unmarshal(bs, &chunkmd5s)
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	chunkfiles, err := opdb.FindUploadDetailByMd5Values(chunkmd5s.Md5Values)
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+	err = MergeChunkFiles(filename, username, chunkfiles)
+	if err != nil {
+		c.JSON(400, err)
+		return
+	}
+
+}
+
+func MergeChunkFiles(filename string, username string, chunkfiles *[]FileUploadDetail) error {
+	// 儲存到本地
+	saveFile := fmt.Sprintf("files/%v", filename)
+	f, err := os.Create(saveFile)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	for _, chunkfile := range chunkfiles {
-		chunkbytes, err := os.ReadFile(chunkfile)
+	var size int64
+	for _, chunkfile := range *chunkfiles {
+		chunkbytes, err := os.ReadFile(chunkfile.ChunkFilename)
 		if err != nil {
 			return err
 		}
@@ -180,7 +227,10 @@ func MergeChunkFiles(filename string, chunkfiles []string) error {
 		if err != nil {
 			return err
 		}
+
+		size = size + chunkfile.Size
 	}
 
-	return nil
+	// 合併成功則在 FileList 增加一筆紀錄
+	return opdb.AddFileToList(filename, username, size)
 }

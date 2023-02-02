@@ -28,6 +28,7 @@ type OPDB interface {
 
 	// Interface
 	IFileUploadDetail
+	IFileList
 }
 
 func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
@@ -45,6 +46,7 @@ func (dbc *DBConfig) NewDBConnection() (OPDB, error) {
 
 	err = db.AutoMigrate(
 		&FileUploadDetail{},
+		&FileList{},
 	)
 
 	if err != nil {

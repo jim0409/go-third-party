@@ -8,18 +8,40 @@
 5. 提供上傳後下載網址 url
  
 
-
-
 # test script
-- curl
+- upload
 ```shell
 curl -F "myFile=@docker-compose.yml" -H "username: jim" \
 http://127.0.0.1:8000/file/upload?filename=docker-compose.yml&md5value=9176b139835b4888ef37776bfdeefab6&chunkorder=1&totalchunks=1
 ```
 
-- wrk
-> 
+- merge
+```shell
+curl -H "username: jim" \
+http://127.0.0.1:8000/file/merge?filename=docker-compose.yml \
+-d '{
+    "chunk_file_md5": [
+        "9176b139835b4888ef37776bfdeefab6"
+    ]
+}'
+``` 
 
+<!-- 
+curl -H "username: jim" \
+http://127.0.0.1:8000/file/merge?filename=auto.mp4 \
+-d '{
+    "chunk_file_md5": [
+        "eb02a78c7158e3cfeeeb2989c23d0920",
+        "f7a9cd4cf188f4737a17fba0b58268ee",
+        "0417f368ad3d98f048d609c6b7961bd5",
+        "0394186975fbdaadcce19313a3c368dd",
+        "6dcf4aea79fb898599ea0b10064654ba",
+        "10ddea23cda77b8d1efda93aabc656cd",
+        "f51f84bd33a4a8f6c663a6d4d701f248",
+        "f10b0690de37e097054ca28e11be4462"
+    ]
+}'
+ -->
 
 
 # refer:

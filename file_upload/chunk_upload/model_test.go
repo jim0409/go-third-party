@@ -55,31 +55,55 @@ func TestUpdateFileDetails(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestFindUploadDetailById(t *testing.T) {
+func TestFindUploadDetailByMd5Values(t *testing.T) {
 	db := MockInit()
 	defer db.Closed()
 
-	ids := []int{1, 2, 3, 4, 5, 6, 7, 8}
-	files, err := db.FindUploadDetailById(ids)
-	assert.Nil(t, err)
-	for _, file := range *files {
-		fmt.Println(file)
+	md5s := []string{
+		"eb02a78c7158e3cfeeeb2989c23d0920",
+		"f7a9cd4cf188f4737a17fba0b58268ee",
+		"0417f368ad3d98f048d609c6b7961bd5",
+		"0394186975fbdaadcce19313a3c368dd",
+		"6dcf4aea79fb898599ea0b10064654ba",
+		"10ddea23cda77b8d1efda93aabc656cd",
+		"f51f84bd33a4a8f6c663a6d4d701f248",
+		"f10b0690de37e097054ca28e11be4462",
 	}
+	chunkfiles, err := db.FindUploadDetailByMd5Values(md5s)
+	assert.Nil(t, err)
+	for _, chunkfile := range *chunkfiles {
+		fmt.Println(chunkfile)
+	}
+}
+
+func TestAddFileToList(t *testing.T) {
+	db := MockInit()
+	defer db.Closed()
+
+	filename := "auto.mp4"
+	owner := "jim"
+	err := db.AddFileToList(filename, owner, 0)
+	assert.Nil(t, err)
 }
 
 func TestMergeFiles(t *testing.T) {
 	filename := "files/auto.mp4"
-	chunkfiles := []string{
-		"files/jim_split-auto.mp4aa_8_1",
-		"files/jim_split-auto.mp4ab_8_2",
-		"files/jim_split-auto.mp4ac_8_3",
-		"files/jim_split-auto.mp4ad_8_4",
-		"files/jim_split-auto.mp4ae_8_5",
-		"files/jim_split-auto.mp4af_8_6",
-		"files/jim_split-auto.mp4ag_8_7",
-		"files/jim_split-auto.mp4ah_8_8",
-	}
+	db := MockInit()
+	defer db.Closed()
 
-	err := MergeChunkFiles(filename, chunkfiles)
+	md5s := []string{
+		"eb02a78c7158e3cfeeeb2989c23d0920",
+		"f7a9cd4cf188f4737a17fba0b58268ee",
+		"0417f368ad3d98f048d609c6b7961bd5",
+		"0394186975fbdaadcce19313a3c368dd",
+		"6dcf4aea79fb898599ea0b10064654ba",
+		"10ddea23cda77b8d1efda93aabc656cd",
+		"f51f84bd33a4a8f6c663a6d4d701f248",
+		"f10b0690de37e097054ca28e11be4462",
+	}
+	chunkfiles, err := db.FindUploadDetailByMd5Values(md5s)
+	assert.Nil(t, err)
+
+	err = MergeChunkFiles(filename, "jim", chunkfiles)
 	assert.Nil(t, err)
 }
