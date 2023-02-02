@@ -14,9 +14,6 @@ import (
 )
 
 func UploadFile(c *gin.Context) {
-	r := c.Request
-	r.ParseMultipartForm(10 << 20)
-
 	// TODO: retrieve user from JWT
 	// verified upload permission
 
@@ -72,17 +69,38 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
-	if uploadfile.ID != 0 {
-		c.JSON(200, gin.H{
-			"status":   "success",
-			"id":       uploadfile.ID,
-			"filename": fmt.Sprintf("Uploaded File: %+v", uploadfile.FileName),
-			"size":     fmt.Sprintf("File Size: %+v", uploadfile.Size),
-		})
+	// 如果已經上傳則直接回傳
+	if uploadfile.ID != 0 && uploadfile.IsUploaded == 1 {
+		switch uploadfile.IsUploaded {
+		case 1:
+			c.JSON(200, gin.H{
+				"status":   "success",
+				"id":       md5value,
+				"filename": fmt.Sprintf("Uploaded File: %+v", uploadfile.FileName),
+				"size":     fmt.Sprintf("File Size: %+v", uploadfile.Size),
+			})
+		case 2:
+			c.JSON(200, gin.H{
+				"status":   "uploading",
+				"id":       md5value,
+				"filename": fmt.Sprintf("Uploaded File: %+v", uploadfile.FileName),
+				"size":     fmt.Sprintf("File Size: %+v", uploadfile.Size),
+			})
+
+		// 考慮用排程系統處理刪除失敗的檔案, 避免過多的刪除失敗導致穿透
+		case -1:
+			c.JSON(200, gin.H{
+				"status":   "failed",
+				"id":       md5value,
+				"filename": fmt.Sprintf("Uploaded File: %+v", uploadfile.FileName),
+				"size":     fmt.Sprintf("File Size: %+v", uploadfile.Size),
+			})
+		}
 		return
 	}
 
-	// TODO: if size over restrict, return upload error msg
+	r := c.Request
+	r.ParseMultipartForm(10 << 20)
 	file, handler, err := r.FormFile("myFile")
 	if err != nil {
 		fmt.Printf("Error Retrieving the File %v\n", err)
@@ -90,7 +108,10 @@ func UploadFile(c *gin.Context) {
 	}
 	defer file.Close()
 
+	// TODO: if size over restrict, return upload error msg
 	size := handler.Size
+
+	//	尚未上傳: uploadfile.ID 為空 or uploadfile.IsUploaded = 0
 	id, err := BackUpFile(file, username, filename, md5value, size, chunkorder, totalchunks)
 	if err != nil {
 		c.JSON(404, fmt.Sprintf("Failed to Uploaded File %v", err))

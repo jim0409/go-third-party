@@ -13,7 +13,7 @@ type FileUploadDetail struct {
 	Size          int64  `gorm:"type:int(64);comment:檔案大小"`
 	ChunkFilename string `gorm:"unique;type:varchar(64);伺服器端分片的檔案名稱"`
 	Md5           string `gorm:"unique;index;type:varchar(255);md5值"`
-	IsUploaded    int    `gorm:"type:tinyint(8);default:0;comment:0,還沒上傳 1,已上傳"`
+	IsUploaded    int    `gorm:"type:tinyint(8);default:0;comment:0,還沒上傳 1,已上傳 2,上傳中 -1,上傳失敗"`
 	ChunkNum      int    `gorm:"type:tinyint(8);default:0;comment:分片序號"`
 	TotalChunks   int    `gorm:"type:tinyint(8);default:0;comment:總分片數"`
 	UidFile       string `gorm:"type:varchar(1024);comment:定義上傳的檔案唯一識別名稱"`
