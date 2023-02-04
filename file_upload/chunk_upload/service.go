@@ -245,21 +245,21 @@ func MergeChunkFiles(filename string, username string, chunkfiles *[]FileUploadD
 	}
 	defer f.Close()
 
-	var size int64
-	for _, chunkfile := range *chunkfiles {
-		chunkbytes, err := os.ReadFile(chunkfile.ChunkFilename)
-		if err != nil {
-			return err
-		}
+	// var size int64
+	// for _, chunkfile := range *chunkfiles {
+	// 	chunkbytes, err := os.ReadFile(chunkfile.ChunkFilename)
+	// 	if err != nil {
+	// 		return err
+	// 	}
 
-		_, err = f.Write(chunkbytes)
-		if err != nil {
-			return err
-		}
+	// 	_, err = f.Write(chunkbytes)
+	// 	if err != nil {
+	// 		return err
+	// 	}
 
-		size = size + chunkfile.Size
-	}
+	// 	size = size + chunkfile.Size
+	// }
 
 	// 合併成功則在 FileList 增加一筆紀錄
-	return opdb.AddFileToList(filename, username, size)
+	return opdb.AddFileToList(filename, username, chunkfiles)
 }

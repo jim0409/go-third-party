@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -86,26 +88,36 @@ func (db *Operation) FindUploadDetailByMd5Values(md5s []string) (*[]FileUploadDe
 	return &chunkfiles, nil
 }
 
+// TODO: refactor chunkIDs column .. ?
 type FileList struct {
 	ID        int    `gorm:"primaryKey;autoIncrement;"`
 	FileName  string `gorm:"index;type:varchar(64);comment:檔案名稱"`
 	Owner     string `gorm:"type:varchar(32);comment:使用者名稱"`
 	Size      int64  `gorm:"type:int(64);comment:檔案大小"`
 	Url       string `gorm:"type:varchar(255);comment:下載網址"`
+	ChunkIDs  string `gorm:"type:varchar(255);comment:分片ID"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
 }
 
 type IFileList interface {
-	AddFileToList(filename string, owner string, size int64) error
+	AddFileToList(filename string, owner string, files *[]FileUploadDetail) error
 }
 
-func (db *Operation) AddFileToList(filename string, owner string, size int64) error {
+func (db *Operation) AddFileToList(filename string, owner string, files *[]FileUploadDetail) error {
+	var totalsize int64 = 0
+	var chunkId []string
+	for _, file := range *files {
+		totalsize = totalsize + file.Size
+		chunkId = append(chunkId, fmt.Sprintf("%d", file.ID))
+	}
+
 	file := &FileList{
 		FileName: filename,
 		Owner:    owner,
-		Size:     size,
+		Size:     totalsize,
+		ChunkIDs: strings.Join(chunkId, ","),
 	}
 
 	return db.DB.Table("file_lists").Create(file).Error
