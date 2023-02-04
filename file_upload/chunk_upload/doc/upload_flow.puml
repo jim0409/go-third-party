@@ -1,0 +1,62 @@
+@startuml
+
+title UploadFile
+
+skinparam ParticipantPadding 80
+skinparam BoxPadding 10
+
+participant "UploadRequest" as UploadRequest #APPLICATION
+
+box "FileUploadDetail" #C7D7D8
+participant "FindUploadRecord" as FindUploadRecord #BUSINESS
+participant "InsertOneRecord" as InsertOneRecord #BUSINESS
+participant "UpdateFileDetail" as UpdateFileDetail #BUSINESS
+end box
+
+box "LocalFile" #C7D7D8
+participant "ChunkFile" as ChunkFile #BUSINESS
+end box
+
+autonumber "0."
+
+' below flow would ignor trival check;e.g. query param check
+UploadRequest -> FindUploadRecord : [Request]\n check file on-going upload chunk status
+activate UploadRequest #F5DDAD
+
+
+group IsUpload not 0
+    autonumber stop
+    activate FindUploadRecord #F5DDAD
+    FindUploadRecord -[#blue]-> UploadRequest : [Success/Fail]\n return upload response. 1(success), 2(on-going), -1(failed)
+    autonumber resume
+else
+    FindUploadRecord -> InsertOneRecord : insert one record into FileUploadDetail
+    deactivate FindUploadRecord
+end
+
+group insert record err
+    activate InsertOneRecord #F5DDAD
+    autonumber stop
+    InsertOneRecord  -[#red]-> UploadRequest : [Fail]\n return upload response -1
+    autonumber resume
+else
+    InsertOneRecord --> ChunkFile : Write chunk to local file
+    deactivate InsertOneRecord
+end
+
+group write chunk fail
+    activate ChunkFile #F5DDAD
+    autonumber stop
+    ChunkFile -[#red]-> UploadRequest : [Fail]\n return upload response -1
+    autonumber resume
+else
+    ChunkFile --> UpdateFileDetail : update chunk file detail
+    deactivate ChunkFile
+end
+
+    activate UpdateFileDetail #F5DDAD
+    UpdateFileDetail --> UploadRequest : [Success/Fail]\n return upload response 0(success), -1(fail)
+
+deactivate UploadRequest
+
+@enduml

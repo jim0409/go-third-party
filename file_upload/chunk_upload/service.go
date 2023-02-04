@@ -37,7 +37,6 @@ func UploadFile(c *gin.Context) {
 		c.JSON(400, "lack of totalchunks!")
 		return
 	}
-
 	totalchunks, err := strconv.Atoi(stotalchunks)
 	if err != nil {
 		c.JSON(400, fmt.Sprintf("convert totalchunks err %v!", err))
@@ -70,7 +69,7 @@ func UploadFile(c *gin.Context) {
 	}
 
 	// 如果已經上傳則直接回傳
-	if uploadfile.ID != 0 && uploadfile.IsUploaded == 1 {
+	if uploadfile.ID != 0 && uploadfile.IsUploaded != 0 {
 		switch uploadfile.IsUploaded {
 		case 1:
 			c.JSON(200, gin.H{
@@ -126,45 +125,54 @@ func UploadFile(c *gin.Context) {
 	})
 }
 
+// TODO: wrap a fileupload module
 func BackUpFile(file io.Reader, username string, filename string, md5value string, size int64, chunknum int, totalchunk int) (int, error) {
+	var uploadStatus = 2
+	chunkFileName := fmt.Sprintf("files/%s_%s_%d_%d", username, filename, totalchunk, chunknum)
 	id, err := opdb.InsertOneRecord(username, filename, md5value, size, totalchunk)
 	if err != nil {
 		return 0, err
 	}
 
+	defer func() {
+		err = opdb.UpdateFileDetails(md5value, filename, chunkFileName, chunknum, uploadStatus)
+		if err != nil {
+			fmt.Printf("upload failed %v with status %v", err, uploadStatus)
+		}
+	}()
+
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
+		uploadStatus = -1
 		return 0, err
 	}
 
-	chunkFileName := fmt.Sprintf("files/%s_%s_%d_%d", username, filename, totalchunk, chunknum)
-
 	f, err := os.Create(chunkFileName)
 	if err != nil {
+		uploadStatus = -1
 		return 0, err
 	}
 	defer f.Close()
 
 	_, err = f.Write(fileBytes)
 	if err != nil {
+		uploadStatus = -1
 		return 0, err
 	}
 
 	// can't use tempFile since in memory bytes differ from file md5
 	newmd5value, err := LoadFileMD5(chunkFileName)
 	if err != nil {
+		uploadStatus = -1
 		return 0, err
 	}
 
 	if newmd5value != md5value {
+		uploadStatus = -1
 		return 0, fmt.Errorf("pls purge file %v origin md5 %v, with new_md5 %v", filename, md5value, newmd5value)
 	}
 
-	err = opdb.UpdateFileDetails(md5value, filename, chunkFileName, chunknum)
-	if err != nil {
-		return 0, err
-	}
-
+	uploadStatus = 1
 	return id, nil
 }
 

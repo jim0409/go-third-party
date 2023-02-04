@@ -26,7 +26,7 @@ type FileUploadDetail struct {
 type IFileUploadDetail interface {
 	InsertOneRecord(usrname string, filename string, md5 string, size int64, totalchunks int) (int, error)
 	FindUploadDetailByFileName(md5 string, filename string) (*FileUploadDetail, error)
-	UpdateFileDetails(md5 string, filename string, chunkfilename string, chunknum int) error
+	UpdateFileDetails(md5 string, filename string, chunkfilename string, chunknum int, status int) error
 	FindUploadDetailByMd5Values(md5s []string) (*[]FileUploadDetail, error)
 }
 
@@ -57,13 +57,13 @@ func (db *Operation) FindUploadDetailByFileName(md5 string, filename string) (*F
 }
 
 // UpdateFileDetails: 更新上傳檔案細節
-func (db *Operation) UpdateFileDetails(md5 string, filename string, chunkfilename string, chunknum int) error {
+func (db *Operation) UpdateFileDetails(md5 string, filename string, chunkfilename string, chunknum int, status int) error {
 	file, err := db.FindUploadDetailByFileName(md5, filename)
 	if err != nil {
 		return err
 	}
 
-	file.IsUploaded = 1
+	file.IsUploaded = status
 	file.ChunkNum = chunknum // 定義上傳的檔案唯一識別名稱
 	file.ChunkFilename = chunkfilename
 	file.UidFile = "todo - need to specified the upload file name"

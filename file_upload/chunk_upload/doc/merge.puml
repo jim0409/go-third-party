@@ -1,0 +1,29 @@
+@startuml
+
+title MergeFile
+
+skinparam ParticipantPadding 80
+skinparam BoxPadding 10
+
+participant "MergeRequest" as MergeRequest #APPLICATION
+
+box "FileUploadDetail" #C7D7D8
+participant "FindUploadRecord" as FindUploadRecord #BUSINESS
+end box
+
+box "FileList" #C7D7D8
+participant "AddFileToList" as AddFileToList #BUSINESS
+end box
+
+box "LocalFile" #C7D7D8
+participant "ChunkFile" as ChunkFile #BUSINESS
+end box
+
+autonumber "0."
+
+MergeRequest -> FindUploadRecord : [Request]\n check file on-going upload chunk status
+activate MergeRequest #F5DDAD
+
+deactivate MergeRequest
+
+@enduml

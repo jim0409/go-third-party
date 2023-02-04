@@ -1,14 +1,15 @@
-# intro
+# 介紹
+建立大檔案傳輸的後端 API
 
-# feature
+# 功能實現
 1. 分片上傳
 2. 秒傳，斷點續傳
 3. 確認合併狀態
 4. 合併分片
-5. 提供上傳後下載網址 url
+5. (TODO)提供上傳後下載網址 url
  
 
-# test script
+# 測試腳本
 - upload
 ```shell
 curl -F "myFile=@docker-compose.yml" -H "username: jim" \
@@ -44,6 +45,17 @@ http://127.0.0.1:8000/file/merge?filename=auto.mp4 \
  -->
 
 
-# refer:
+# 參照:
+### 靈感參照
+- https://github.com/threeaccents/mahi
+- https://github.com/atulkgupta9/big-file-uploader
+- https://github.com/zhuchangwu/large-file-upload
+- https://medium.com/akatsuki-taiwan-technology/uploading-large-files-in-golang-without-using-buffer-or-pipe-9b5aafacfc16
+- https://freshman.tech/file-upload-golang/
+- https://stackoverflow.com/questions/39761910/how-can-you-upload-files-as-a-stream-in-go
+- https://prajwol-kc.com.np/2022/03/05/chunk-file-uploading-on-golang/
+- https://tw511.com/a/01/32972.html
+
+### 緩存文件
 - https://wangbjun.site/2020/coding/golang/file-md5.html
 - https://www.kancloud.cn/digest/batu-go/153538
