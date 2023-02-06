@@ -80,22 +80,11 @@ func TestAddFileToList(t *testing.T) {
 	db := MockInit()
 	defer db.Closed()
 
-	filename := "auto.mp4"
+	filename := "demo.mp4"
 	owner := "jim"
-	md5s := []string{
-		"eb02a78c7158e3cfeeeb2989c23d0920",
-		"f7a9cd4cf188f4737a17fba0b58268ee",
-		"0417f368ad3d98f048d609c6b7961bd5",
-		"0394186975fbdaadcce19313a3c368dd",
-		"6dcf4aea79fb898599ea0b10064654ba",
-		"10ddea23cda77b8d1efda93aabc656cd",
-		"f51f84bd33a4a8f6c663a6d4d701f248",
-		"f10b0690de37e097054ca28e11be4462",
-	}
-	chunkfiles, err := db.FindUploadDetailByMd5Values(md5s)
-	assert.Nil(t, err)
+	chunkdIds := "1,2,3,4"
 
-	err = db.AddFileToList(filename, owner, chunkfiles)
+	err := db.AddFileToList(filename, owner, 100, chunkdIds)
 	assert.Nil(t, err)
 }
 

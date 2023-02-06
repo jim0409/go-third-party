@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -102,22 +100,15 @@ type FileList struct {
 }
 
 type IFileList interface {
-	AddFileToList(filename string, owner string, files *[]FileUploadDetail) error
+	AddFileToList(filename string, owner string, totalSize int64, chunkIds string) error
 }
 
-func (db *Operation) AddFileToList(filename string, owner string, files *[]FileUploadDetail) error {
-	var totalsize int64 = 0
-	var chunkId []string
-	for _, file := range *files {
-		totalsize = totalsize + file.Size
-		chunkId = append(chunkId, fmt.Sprintf("%d", file.ID))
-	}
-
+func (db *Operation) AddFileToList(filename string, owner string, totalSize int64, chunkIds string) error {
 	file := &FileList{
 		FileName: filename,
 		Owner:    owner,
-		Size:     totalsize,
-		ChunkIDs: strings.Join(chunkId, ","),
+		Size:     totalSize,
+		ChunkIDs: chunkIds,
 	}
 
 	return db.DB.Table("file_lists").Create(file).Error

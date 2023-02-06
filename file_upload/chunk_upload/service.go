@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -222,9 +223,15 @@ func MergeFile(c *gin.Context) {
 		return
 	}
 
+	// 檢驗 md5 的總數 與 對應的 chunks 檔案數 是否一致
 	chunkfiles, err := opdb.FindUploadDetailByMd5Values(chunkmd5s.Md5Values)
 	if err != nil {
 		c.JSON(400, err)
+		return
+	}
+
+	if len(*chunkfiles) != len(chunkmd5s.Md5Values) {
+		c.JSON(400, "lack of chunks")
 		return
 	}
 
@@ -245,21 +252,24 @@ func MergeChunkFiles(filename string, username string, chunkfiles *[]FileUploadD
 	}
 	defer f.Close()
 
-	// var size int64
-	// for _, chunkfile := range *chunkfiles {
-	// 	chunkbytes, err := os.ReadFile(chunkfile.ChunkFilename)
-	// 	if err != nil {
-	// 		return err
-	// 	}
+	var size int64
+	var chunksIds []string
+	for _, chunkfile := range *chunkfiles {
+		// write chunks to one file
+		chunkbytes, err := os.ReadFile(chunkfile.ChunkFilename)
+		if err != nil {
+			return err
+		}
 
-	// 	_, err = f.Write(chunkbytes)
-	// 	if err != nil {
-	// 		return err
-	// 	}
+		_, err = f.Write(chunkbytes)
+		if err != nil {
+			return err
+		}
 
-	// 	size = size + chunkfile.Size
-	// }
+		size = size + chunkfile.Size
+		chunksIds = append(chunksIds, fmt.Sprintf("%d", chunkfile.ID))
+	}
 
 	// 合併成功則在 FileList 增加一筆紀錄
-	return opdb.AddFileToList(filename, username, chunkfiles)
+	return opdb.AddFileToList(filename, username, size, strings.Join(chunksIds, ","))
 }
