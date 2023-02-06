@@ -223,14 +223,15 @@ func MergeFile(c *gin.Context) {
 		return
 	}
 
-	// 檢驗 md5 的總數 與 對應的 chunks 檔案數 是否一致
+	// 透過 md5 獲取對應的 chunkfiles
 	chunkfiles, err := opdb.FindUploadDetailByMd5Values(chunkmd5s.Md5Values)
 	if err != nil {
 		c.JSON(400, err)
 		return
 	}
 
-	if len(*chunkfiles) != len(chunkmd5s.Md5Values) {
+	// 檢驗 md5 的總數 與 對應的 chunks 檔案數 是否一致
+	if len(*chunkfiles) != len(chunkmd5s.Md5Values) || (*chunkfiles)[0].TotalChunks != len(chunkmd5s.Md5Values) {
 		c.JSON(400, "lack of chunks")
 		return
 	}
