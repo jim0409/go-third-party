@@ -230,8 +230,25 @@ func MergeFile(c *gin.Context) {
 		return
 	}
 
+	totalChunks := (*chunkfiles)[0].TotalChunks
+	chunkids := []string{}
+	for _, chunkfile := range *chunkfiles {
+		chunkids = append(chunkids, fmt.Sprintf("%d", chunkfile.ID))
+	}
+
+	file, err := opdb.QueryFileListViaInfo(username, filename, chunkids)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+
+	if file.FileName != "" {
+		c.JSON(200, fmt.Sprintf("merge file %v already existed", filename))
+		return
+	}
+
 	// 檢驗 md5 的總數 與 對應的 chunks 檔案數 是否一致
-	if len(*chunkfiles) != len(chunkmd5s.Md5Values) || (*chunkfiles)[0].TotalChunks != len(chunkmd5s.Md5Values) {
+	if len(chunkids) != len(chunkmd5s.Md5Values) || totalChunks != len(chunkmd5s.Md5Values) {
 		c.JSON(400, "lack of chunks")
 		return
 	}
@@ -242,6 +259,7 @@ func MergeFile(c *gin.Context) {
 		return
 	}
 
+	c.JSON(200, fmt.Sprintf("merge file %v success", filename))
 }
 
 func MergeChunkFiles(filename string, username string, chunkfiles *[]FileUploadDetail) error {

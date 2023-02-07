@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -101,6 +102,7 @@ type FileList struct {
 
 type IFileList interface {
 	AddFileToList(filename string, owner string, totalSize int64, chunkIds string) error
+	QueryFileListViaInfo(username string, filename string, chunkIds []string) (*FileList, error)
 }
 
 func (db *Operation) AddFileToList(filename string, owner string, totalSize int64, chunkIds string) error {
@@ -112,4 +114,10 @@ func (db *Operation) AddFileToList(filename string, owner string, totalSize int6
 	}
 
 	return db.DB.Table("file_lists").Create(file).Error
+}
+
+func (db *Operation) QueryFileListViaInfo(username string, filename string, chunkIds []string) (*FileList, error) {
+	file := &FileList{}
+	chunkids := strings.Join(chunkIds, ",")
+	return file, db.DB.Table("file_lists").Select("*").Where("owner = ? AND file_name = ? AND chunk_ids = ?", username, filename, chunkids).Scan(file).Error
 }

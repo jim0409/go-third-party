@@ -1,5 +1,9 @@
 @startuml
 
+' activate 進入 #F5DDAD
+' activate 主線 #CFDD8E
+' activate 支線 #F5DDAD
+
 title MergeFile
 
 skinparam ParticipantPadding 80
@@ -11,18 +15,40 @@ box "FileUploadDetail" #C7D7D8
 participant "FindUploadRecord" as FindUploadRecord #BUSINESS
 end box
 
-box "FileList" #C7D7D8
-participant "AddFileToList" as AddFileToList #BUSINESS
-end box
-
 box "LocalFile" #C7D7D8
 participant "ChunkFile" as ChunkFile #BUSINESS
+end box
+
+box "FileList" #C7D7D8
+participant "AddFileToList" as AddFileToList #BUSINESS
 end box
 
 autonumber "0."
 
 MergeRequest -> FindUploadRecord : [Request]\n check file on-going upload chunk status
 activate MergeRequest #F5DDAD
+
+activate FindUploadRecord #CFDD8E
+autonumber stop
+FindUploadRecord -[#red]-> MergeRequest : Merge local chunks to filename
+autonumber resume
+activate FindUploadRecord #F5DDAD
+FindUploadRecord -> ChunkFile : Merge local chunks to filename
+deactivate FindUploadRecord
+deactivate FindUploadRecord
+
+activate ChunkFile #CFDD8E
+autonumber stop
+ChunkFile -[#red]-> MergeRequest : Merge local chunks failed
+autonumber resume
+activate ChunkFile #F5DDAD
+ChunkFile -> AddFileToList : Merge local chunks to filename
+deactivate ChunkFile
+deactivate ChunkFile
+
+activate AddFileToList #CFDD8E
+AddFileToList -> MergeRequest : return merge result
+deactivate AddFileToList
 
 deactivate MergeRequest
 

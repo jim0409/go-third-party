@@ -24,38 +24,35 @@ UploadRequest -> FindUploadRecord : [Request]\n check file on-going upload chunk
 activate UploadRequest #F5DDAD
 
 
-group IsUpload not 0
-    autonumber stop
-    activate FindUploadRecord #F5DDAD
-    FindUploadRecord -[#blue]-> UploadRequest : [Success/Fail]\n return upload response. 1(success), 2(on-going), -1(failed)
-    autonumber resume
-else
-    FindUploadRecord -> InsertOneRecord : insert one record into FileUploadDetail
-    deactivate FindUploadRecord
-end
+activate FindUploadRecord #CFDD8E
+autonumber stop
+FindUploadRecord -[#blue]-> UploadRequest : [IsUpload not 0]\n return upload response.\n 1(success), 2(on-going), -1(failed)
+autonumber resume
+activate FindUploadRecord #F5DDAD
+FindUploadRecord -> InsertOneRecord : insert one record into FileUploadDetail
+deactivate FindUploadRecord
+deactivate FindUploadRecord
 
-group insert record err
-    activate InsertOneRecord #F5DDAD
-    autonumber stop
-    InsertOneRecord  -[#red]-> UploadRequest : [Fail]\n return upload response -1
-    autonumber resume
-else
-    InsertOneRecord --> ChunkFile : Write chunk to local file
-    deactivate InsertOneRecord
-end
+activate InsertOneRecord #CFDD8E
+autonumber stop
+InsertOneRecord  -[#red]-> UploadRequest : [Insert record error]\n return upload response -1
+autonumber resume
+activate InsertOneRecord #F5DDAD
+InsertOneRecord --> ChunkFile : Write chunk to local file
+deactivate InsertOneRecord
+deactivate InsertOneRecord
 
-group write chunk fail
-    activate ChunkFile #F5DDAD
-    autonumber stop
-    ChunkFile -[#red]-> UploadRequest : [Fail]\n return upload response -1
-    autonumber resume
-else
-    ChunkFile --> UpdateFileDetail : update chunk file detail
-    deactivate ChunkFile
-end
+activate ChunkFile #CFDD8E
+autonumber stop
+ChunkFile -[#red]-> UploadRequest : [Write chunk fail]\n return upload response -1
+autonumber resume
+activate ChunkFile #F5DDAD
+ChunkFile --> UpdateFileDetail : update chunk file detail
+deactivate ChunkFile
+deactivate ChunkFile
 
-    activate UpdateFileDetail #F5DDAD
-    UpdateFileDetail --> UploadRequest : [Success/Fail]\n return upload response 0(success), -1(fail)
+activate UpdateFileDetail #CFDD8E
+UpdateFileDetail --> UploadRequest : [Success/Fail]\n return upload response.\n 1(success), -1(fail)
 
 deactivate UploadRequest
 

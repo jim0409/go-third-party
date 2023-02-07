@@ -88,8 +88,10 @@ func TestAddFileToList(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+/*
+// 測試合併檔案 .. 1.要有 chunks; 2.要有 合併的 檔案路徑
 func TestMergeFiles(t *testing.T) {
-	filename := "files/auto.mp4"
+	filename := "auto.mp4"
 	db := MockInit()
 	defer db.Closed()
 
@@ -108,4 +110,16 @@ func TestMergeFiles(t *testing.T) {
 
 	err = MergeChunkFiles(filename, "jim", chunkfiles)
 	assert.Nil(t, err)
+}
+*/
+
+func TestQueryFileViaMd5(t *testing.T) {
+	db := MockInit()
+	defer db.Closed()
+	username := "jim"
+	filename := "demo.mp4"
+	chunkIds := []string{"1", "2", "3", "4", "5", "6", "7", "8"}
+	file, err := db.QueryFileListViaInfo(username, filename, chunkIds)
+	assert.Nil(t, err)
+	fmt.Println(file)
 }
