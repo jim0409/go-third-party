@@ -7,12 +7,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
-	logRoot     = "service.log"
-	mysqlRoot   = "service.mysql"
-	serviceRoot = "service.service"
-)
-
 type Configs struct {
 	config *viper.Viper
 }
@@ -35,9 +29,10 @@ func (c *Configs) loadConfig(path string) {
 
 func main() {
 	configPath := "./config.yaml"
+	cfg := &Configs{}
+	cfg.loadConfig(configPath)
+	for k, v := range cfg.config.AllKeys() {
+		fmt.Println(k, v)
+	}
 
-	Config := &Configs{}
-	Config.loadConfig(configPath)
-
-	fmt.Println(Config)
 }

@@ -6,6 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	logRoot     = "service.log"
+	mysqlRoot   = "service.mysql"
+	serviceRoot = "service.service"
+)
+
 func TestLoadConfig(t *testing.T) {
 	configPath := "./config.yaml"
 
