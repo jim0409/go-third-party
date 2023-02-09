@@ -1,55 +1,56 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 
-	"github.com/knadh/go-pop3"
+	"github.com/gin-gonic/gin"
 )
 
+var (
+	GlobalAuth       string
+	GlobalUser       string
+	GlobalHost       string
+	GlobalSmtpserver string
+	GlobalEnv        string
+)
+
+var (
+	DemoFrom    = "system@gmail.com"
+	DemoTo      = "berserker.01.tw@gmail.com"
+	DemoSubject = "system subject"
+	DemoId      = 0
+)
+
+func SetGlobalVariable(cfg Config) {
+	GlobalAuth = cfg.Auth
+	GlobalUser = cfg.User
+	GlobalHost = cfg.Host
+	GlobalSmtpserver = cfg.Server
+	GlobalEnv = cfg.Env
+}
+
 func main() {
-	// Initialize the client.
-	p := pop3.New(pop3.Opt{
-		Host:       "pop.gmail.com",
-		Port:       995,
-		TLSEnabled: true,
-	})
-
-	// Create a new connection. POP3 connections are stateful and should end
-	// with a Quit() once the opreations are done.
-	c, err := p.NewConn()
+	cfg, err := InitConfig("./config.ini")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	defer c.Quit()
+	SetGlobalVariable(*cfg)
 
-	// Authenticate.
-	if err := c.Auth("myuser", "mypassword"); err != nil {
-		log.Fatal(err)
-	}
+	handler := gin.Default()
+	apiRouter(handler)
 
-	// Print the total number of messages and their size.
-	count, size, _ := c.Stat()
-	fmt.Println("total messages=", count, "size=", size)
-
-	// Pull the list of all message IDs and their sizes.
-	msgs, _ := c.List(0)
-	for _, m := range msgs {
-		fmt.Println("id=", m.ID, "size=", m.Size)
+	httpSrv := &http.Server{
+		Addr:    ":" + "8000",
+		Handler: handler,
 	}
 
-	// Pull all messages on the server. Message IDs go from 1 to N.
-	for id := 1; id <= count; id++ {
-		m, _ := c.Retr(id)
+	go func() {
+		if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Printf("http listen : %v\n", err)
+			panic(err)
+		}
+	}()
 
-		fmt.Println(id, "=", m.Header.Get("subject"))
-
-		// To read the multi-part e-mail bodies, see:
-		// https://github.com/emersion/go-message/blob/master/example_test.go#L12
-	}
-
-	// Delete all the messages. Server only executes deletions after a successful Quit()
-	for id := 1; id <= count; id++ {
-		c.Dele(id)
-	}
+	select {}
 }
