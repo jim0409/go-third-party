@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,11 +22,12 @@ func apiRouter(route *gin.Engine) {
 }
 
 type PostBody struct {
-	AuthCode string `json:"authcode"` // for smtp server authentication? or middleware check?
-	ID       int    `json:"id"`
-	Mail     string `json:"mail"`
-	Sub      string `json:"sub"`
-	From     string `json:"from"`
+	AuthCode string                 `json:"authcode"` // for smtp server authentication? or middleware check?
+	ID       int                    `json:"id"`
+	Mail     string                 `json:"mail"`
+	Sub      string                 `json:"sub"`
+	From     string                 `json:"from"`
+	Data     map[string]interface{} `json:"data"`
 }
 
 func MiddleWare() gin.HandlerFunc {
@@ -39,13 +40,12 @@ func MiddleWare() gin.HandlerFunc {
 			return
 		}
 
-		bs, err = ioutil.ReadAll(c.Request.Body)
+		bs, err = io.ReadAll(c.Request.Body)
 		if err != nil {
 			c.JSON(400, err)
 			c.Abort()
 			return
 		}
-		fmt.Println(string(bs))
 
 		postbd := &PostBody{}
 		err = json.Unmarshal(bs, postbd)
@@ -89,6 +89,7 @@ func MiddleWare() gin.HandlerFunc {
 		c.Set("mail", postbd.Mail)
 		c.Set("sub", postbd.Sub)
 		c.Set("from", postbd.From)
+		c.Set("data", postbd.Data)
 
 		c.Next()
 	}
@@ -99,7 +100,8 @@ func SendHandler(c *gin.Context) {
 	mail := c.GetString("mail")
 	sub := c.GetString("sub")
 	from := c.GetString("from")
-	sender := NewSender(GlobalAuth, GlobalUser, GlobalHost, GlobalSmtpserver, &MsgTemplate)
+	data := c.GetStringMap("data")
+	sender := NewSender(GlobalAuth, GlobalUser, GlobalHost, GlobalSmtpserver, &MsgTemplate, data)
 	err := sender.SendMail(from, mail, sub, id)
 	if err != nil {
 		c.JSON(400, gin.H{"msg": err})

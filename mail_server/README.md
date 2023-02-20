@@ -1,41 +1,38 @@
 ## intro
 
-send mail via smtp server
+透過 google 的 smtp伺服器 寄送信件
 
-## pre required
-1. go env required
+## 相依安裝
+1. 下載 go
 > https://go.dev/dl/
-2. install related package
+2. 下載對應的 go 套件
 > go mod vendor
-3. copy a config.ini & filled value
+3. 複製一份 config.ini 並且依照環境修改參數
 > cp config.ini.tmpl config.ini
 
-## quick start
-1. build
+## 快速啟動
+1. 建置
 > go build -o app .
-2. run
+2. 運行
 > ./app
 
 
-## testing
-### required:
-1. authcode: for authentication
-2. id: for render msg index
-3. mail: sending address
-### option:
-1. sub: subject
+## 測試
+### 必需:
+1. authcode: 身份驗證
+2. id: 選擇對應的模板
+3. mail: 郵件發送地址
+### 可選:
+1. sub: 信件主旨
  
 ```bash
-curl "http://127.0.0.1:8000/msg/send" -d '{"authcode":"test", "id":1, "sub": "good_subject", "mail": "berserker.01.tw@gmail.com"}'
-
-# lack sub
-curl "http://127.0.0.1:8000/msg/send" -d '{"authcode":"test", "id":1, "mail": "berserker.01.tw@gmail.com"}'
+curl "http://127.0.0.1:8000/msg/send" -d '{"authcode":"test", "id":1, "sub": "good_subject", "mail": "berserker.01.tw@gmail.com", "data":{"Name":"Jim", "URL":"https://demo.testfire.net"}}'
 
 ```
 
-## config google smtp server settings
+## 如何設定自己的 google smtp 伺服器
 - https://www.webdesigntooler.com/google-smtp-send-mail
 
-## refer:
+## 參考:
 - https://gist.github.com/jpillora/cb46d183eca0710d909a
-
+- https://medium.com/@dhanushgopinath/sending-html-emails-using-templates-in-golang-9e953ca32f3d

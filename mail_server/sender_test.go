@@ -12,7 +12,8 @@ func TestSender(t *testing.T) {
 		panic(err)
 	}
 	SetGlobalVariable(*cfg)
-	sender := NewSender(GlobalAuth, GlobalUser, GlobalHost, GlobalSmtpserver, &MsgTemplate)
+
+	sender := NewSender(GlobalAuth, GlobalUser, GlobalHost, GlobalSmtpserver, &MsgTemplate, nil)
 
 	err = sender.SendMail(DemoFrom, DemoTo, DemoSubject, DemoId)
 	assert.Nil(t, err)
