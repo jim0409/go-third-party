@@ -54,6 +54,7 @@ require (
 	github.com/olivere/elastic v6.2.35+incompatible
 	github.com/oschwald/maxminddb-golang v1.8.0
 	github.com/prometheus/client_golang v1.11.0
+	github.com/robfig/cron v1.2.0
 	github.com/rs/xid v1.2.1
 	github.com/rs/zerolog v1.22.0
 	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
@@ -71,7 +72,6 @@ require (
 	github.com/valyala/fasthttp v1.31.0
 	github.com/wangtuanjie/ip17mon v1.5.2
 	github.com/xtaci/kcp-go/v5 v5.6.1
-	github.com/zommage/cron v0.0.0-20180918061821-210507a89644
 	go.elastic.co/apm/module/apmfiber v1.14.0
 	go.elastic.co/apm/module/apmgin v1.14.0
 	go.etcd.io/etcd/client/pkg/v3 v3.5.0
@@ -122,8 +122,6 @@ require (
 	github.com/elastic/go-licenser v0.3.1 // indirect
 	github.com/elastic/go-sysinfo v1.1.1 // indirect
 	github.com/elastic/go-windows v1.0.0 // indirect
-	github.com/emersion/go-message v0.15.0 // indirect
-	github.com/emersion/go-textwrapper v0.0.0-20200911093747-65d896831594 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/frankban/quicktest v1.11.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
@@ -164,7 +162,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
@@ -172,7 +169,6 @@ require (
 	github.com/klauspost/compress v1.13.4 // indirect
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/klauspost/reedsolomon v1.9.9 // indirect
-	github.com/knadh/go-pop3 v0.3.0 // indirect
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348 // indirect

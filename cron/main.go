@@ -2,57 +2,45 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
+	"sync"
 	"time"
 
-	"github.com/zommage/cron"
+	"github.com/robfig/cron"
 )
 
 const (
 	// 秒 分 時 日 月
 	cron1 = "*/1 * * * * ?"
+	cron2 = "*/2 * * * * ?"
 )
 
 func main() {
-	cronRes := cron.New()
-	if err := addCrons(cronRes); err != nil {
-		panic(err)
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+
+	cronjob := cron.New()
+	cronjob.AddFunc(cron1, func() { fmt.Println("test1") })
+	cronjob.AddFunc(cron1, func() { fmt.Println("test2") })
+	cronjob.AddFunc(cron2, func() { wg.Done() })
+	cronjob.Start()
+	defer cronjob.Stop()
+
+	select {
+	// 期許要在4秒內結束
+	case <-time.After(4 * time.Second):
+		fmt.Println("expected job fires 2 times")
+	// 每2秒完成一個 wait, 4秒完成2個
+	case <-wait(wg):
+		fmt.Println("finish 2 wait")
 	}
-	cronRes.Start()
-	defer cronRes.Stop()
-	gracefulShutdown()
+
 }
 
-func addCrons(c *cron.Cron) error {
-	c.AddFunc(cron1, func() {
-		go printInt()
-	})
-	return nil
-}
-
-func printInt() {
-	fmt.Println(time.Now())
-}
-
-func gracefulShutdown() {
-
-	// create one chan to print awaiting signal on console
-	sigs := make(chan os.Signal, 1)
-	// create another chan to receive signal to interrupt original chan
-	done := make(chan bool, 1)
-
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
+func wait(wg *sync.WaitGroup) chan bool {
+	ch := make(chan bool)
 	go func() {
-		sig := <-sigs
-		fmt.Println()
-		fmt.Println(sig)
-		done <- true
+		wg.Wait()
+		ch <- true
 	}()
-
-	fmt.Println("awaiting signal")
-	<-done
-	fmt.Println("exiting")
+	return ch
 }
