@@ -24,6 +24,7 @@ require (
 	github.com/coreos/etcd v3.3.27+incompatible
 	github.com/fatih/structs v1.1.0
 	github.com/garyburd/redigo v1.6.4
+	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-ini/ini v1.67.0
 	github.com/go-redis/redis v6.15.9+incompatible

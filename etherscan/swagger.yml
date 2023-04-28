@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info:
+  title: BlockChainAPI
+  version: 0.0.1
+  description: <a href=https://etherscan.io/address/0x755229b87cec1d55c8b1aa0c66c1be4d8136e8cf>demo account</a>
+               <br> 
+               '<img src="./img/demo.png" width="50%">'
+servers:
+  - url: http://127.0.0.1:8000/
+
+components:
+  schemas:
+    # Response schema
+    meta-data:
+      description: 回覆資料格式
+      type: object
+      properties:
+        code:
+          description: 中繼代碼 (e.g. 2200)
+          type: integer
+        status:
+          description: 中繼狀態 (e.g. 'success')
+          type: string
+        message:
+          description: 中繼訊息 (e.g. 'OK.')
+          type: string
+    null-data:
+      description: 空值資料 (e.g. null)
+      type: object
+      nullable: true
+    # Response data
+    version:
+      description: 版本 (e.g. 'v1.0.0')
+      type: string
+  responses:
+    response-data:
+      description: 成功回應
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: "#/components/schemas/meta-data"
+              data:
+                $ref: "#/components/schemas/null-data"
+
+paths:
+  # # etherscan::basic
+  # /_version:
+  #   get:
+  #     description: 顯示當前版本號
+  #     tags:
+  #       - etherscan::basic
+  #     responses:
+  #       "200":
+  #         $ref: "#/components/responses/response-data"
+
+  # etherscan::account
+  /etherscan:
+    post:
+      description: 檢查使用者交易ID
+      tags:
+        - etherscan::account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  type: string
+                  default: "0x755229B87cEc1d55c8b1Aa0c66C1be4D8136E8CF"
+                targets:
+                  type: array
+                  default: ["0x5f432212023ecd0019aca196d561e9ac96a95dee5f38ddfeae89647df45d6126"]
+                  items: 
+                    type: string
+
+      responses:
+        "200":
+          $ref: "#/components/responses/response-data"
+
+
+
