@@ -47,7 +47,9 @@ func (a *AccountTxList) SearchTargetTx(targets []string) []string {
 
 	for _, res := range a.Result {
 		if _, ok := targetmaps[res.Hash]; ok {
-			if res.IsError == "0" {
+			// 確定沒錯, 且交易狀態為完成
+			// https://ethereum.stackexchange.com/a/63237
+			if res.IsError == "0" && res.TxreceiptStatus == "1" {
 				txs = append(txs, res.Hash)
 			}
 		}
