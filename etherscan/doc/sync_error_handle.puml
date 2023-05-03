@@ -1,0 +1,33 @@
+@startuml
+title SyncAccountErrorHandle
+
+skinparam ParticipantPadding 80
+skinparam BoxPadding 10
+
+box "Cache" #C7D7D8
+participant "Redis" as redis #BUSINESS
+end box
+
+box "Server" #C7D7D8
+participant "AccountManager" as AccountManager #BUSINESS
+participant "RequestPoolManager" as RequestPoolManager #BUSINESS
+end box
+
+box "Cryptocurrency Exchanges" #C7D7D8
+participant "Exchanges" as Exchanges #BUSINESS
+end box
+
+
+autonumber "0."
+
+RequestPoolManager <--> Exchanges : [ratelimit]\n<account>\ncheck recent transactions
+
+RequestPoolManager -> redis : {key: account:task_id, value: [{action: err response}]}
+
+redis -> AccountManager : [period]\nread error account
+
+AccountManager -> AccountManager : [period]\nmodify&gen account query task
+
+AccountManager -> RequestPoolManager : send query task
+
+@enduml

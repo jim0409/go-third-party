@@ -13,7 +13,7 @@ const gateway = "https://api.etherscan.io/api"
 func GetAccountTxList(account string) (ITxList, error) {
 	action := "txlist"
 	module := "account"
-	resp, err := http.Get(fmt.Sprintf("%v?module=%v&action=%v&address=%v", gateway, module, action, account))
+	resp, err := http.Get(fmt.Sprintf("%v?page=1&offset=10&sort=desc&module=%v&action=%v&address=%v", gateway, module, action, account))
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,36 @@
+@startuml
+title SyncAccountTrans
+
+skinparam ParticipantPadding 80
+skinparam BoxPadding 10
+
+box "Storage" #C7D7D8
+participant "MySQL" as mysql #BUSINESS
+end box
+
+box "Server" #C7D7D8
+participant "AccountManager" as AccountManager #BUSINESS
+participant "RequestPoolManager" as RequestPoolManager #BUSINESS
+end box
+
+box "Cryptocurrency Exchanges" #C7D7D8
+participant "Exchanges" as Exchanges #BUSINESS
+end box
+
+autonumber "0."
+
+mysql -> AccountManager : read db\naccount, wallet address\nand transaction records
+
+AccountManager -> AccountManager : [period]\ngen account query task
+
+AccountManager -> RequestPoolManager : send query task
+
+RequestPoolManager <--> Exchanges : [ratelimit]\n<account>\ncheck recent transactions
+
+RequestPoolManager -> AccountManager : return query infos
+
+AccountManager -> AccountManager : align recent transaction records
+
+AccountManager -> mysql : stored confirm records to db
+
+@enduml
