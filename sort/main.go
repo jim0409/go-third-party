@@ -32,4 +32,15 @@ func main() {
 	for _, v := range a {
 		fmt.Println(v)
 	}
+
+	doubleArr := [][]int{{2, 6}, {0, 1}, {1, 4}, {3, 2}, {4, 5}}
+	sort.Slice(doubleArr, func(i int, j int) bool {
+		if doubleArr[i][0] == doubleArr[j][0] {
+			return doubleArr[i][1] < doubleArr[j][1]
+		}
+		return doubleArr[i][0] < doubleArr[j][0]
+	})
+
+	fmt.Println(doubleArr)
+
 }
