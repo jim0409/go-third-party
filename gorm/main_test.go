@@ -1,17 +1,20 @@
 package dbpkg
 
 import (
+	"context"
 	"log"
+	"net"
 	"os"
 	"testing"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	clearTestEnv()
-}
+// func init() {
+// 	clearTestEnv()
+// }
 
 func clearTestEnv() {
 	log.Println("Clear test env")
@@ -113,4 +116,84 @@ func BenchmarkCreate(b *testing.B) {
 		}
 	}
 
+}
+
+// 配合 ../change_dns_resolver
+func TestForDnsCheck(t *testing.T) {
+	net.DefaultResolver = &net.Resolver{
+		PreferGo: true,
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			d := net.Dialer{
+				// Timeout: time.Millisecond * time.Duration(10000),
+				Timeout: time.Second * time.Duration(10),
+			}
+			return d.DialContext(ctx, network, "127.0.0.1:5301")
+		},
+	}
+
+	mysqlAddr := "dns.jim.host"
+	mysqlPort := "3306"
+	mysqlOpDB := "testdb"
+	mysqlUsr := "jim"
+	mysqUsrPwd := "password"
+
+	newDB := NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
+	db, err := newDB.NewDBConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	dt := &DemoTable{
+		Name:  "jim",
+		Email: "email@example.com",
+	}
+
+	for i := 0; i < 20000; i++ {
+		if err := db.Create(dt.Name, dt.Email); err != nil {
+			panic(err)
+		}
+	}
+}
+
+// go test -benchmem -run=^$ -bench ^BenchmarkForDnsCheck$ -count 1 -v
+func BenchmarkForDnsCheck(b *testing.B) {
+	net.DefaultResolver = &net.Resolver{
+		PreferGo: true,
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			d := net.Dialer{
+				// Timeout: time.Millisecond * time.Duration(10000),
+				Timeout: time.Second * time.Duration(10),
+			}
+			return d.DialContext(ctx, network, "127.0.0.1:5301")
+		},
+	}
+
+	mysqlAddr := "dns.jim.host"
+	mysqlPort := "3306"
+	mysqlOpDB := "testdb"
+	mysqlUsr := "jim"
+	mysqUsrPwd := "password"
+
+	newDB := NewDBConfiguration(mysqlUsr, mysqUsrPwd, "mysql", mysqlOpDB, mysqlPort, mysqlAddr)
+	db, err := newDB.NewDBConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	dt := &DemoTable{
+		Name:  "jim",
+		Email: "email@example.com",
+	}
+
+	for i := 0; i < b.N; i++ {
+		if err := db.Create(dt.Name, dt.Email); err != nil {
+			panic(err)
+		}
+	}
 }

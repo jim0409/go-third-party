@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+    dns:
+        restart: always
+        container_name: dnsmasq
+        image: strm/dnsmasq
+        volumes:
+            - ./dnsmasq.conf:/etc/dnsmasq.conf
+            - ./hosts:/etc/hosts
+        ports:
+            - "5301:53/udp"
+        cap_add:
+            - NET_ADMIN
+
+# dig dns.jim.host @127.0.0.1 -p 5301
