@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-redis/redis"
 )
@@ -14,6 +15,12 @@ func NewRedisClient(addr string, pw string) redisDAO {
 		Password: pw,
 		DB:       0,
 	})
+
+	_, err := client.Do("CLIENT", "SETNAME", "demo").Result()
+	if err != nil {
+		panic(err)
+	}
+
 	rO := &redisObject{
 		ro: client,
 	}
@@ -38,6 +45,11 @@ func main() {
 	fmt.Println(redisClient.deleteValue("a"))
 	// lpush lpush_key lpush_value
 	// fmt.Println(redisClient.LPOP("lpush_key"))
+
+	for {
+		time.Sleep(1 * time.Second)
+		fmt.Println(redisClient.ping())
+	}
 }
 
 type redisObject struct {
