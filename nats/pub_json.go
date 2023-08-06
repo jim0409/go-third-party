@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/nats-io/nats.go"
 )
@@ -28,9 +30,14 @@ func main() {
 		Price  int
 	}
 
+	fmt.Println(time.Now())
 	// Publish the message
-	if err := ec.Publish("updates", &stock{Symbol: "GOOG", Price: 1200}); err != nil {
-		log.Fatal(err)
+	for i := 0; i < 100000; i++ {
+		// if err := ec.Publish("updates", &stock{Symbol: "GOOG", Price: 1200}); err != nil {
+		if err := ec.Publish("updates", &stock{Symbol: "GOOG", Price: i}); err != nil {
+			log.Fatal(err)
+		}
 	}
 	// [end publish_json]
+	fmt.Println(time.Now())
 }

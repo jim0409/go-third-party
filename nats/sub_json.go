@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"sync"
 
 	"github.com/nats-io/nats.go"
 )
@@ -28,19 +27,20 @@ func main() {
 		Price  int
 	}
 
-	wg := sync.WaitGroup{}
-	wg.Add(1)
+	// wg := sync.WaitGroup{}
+	// wg.Add(1)
 
 	// Subscribe
 	if _, err := ec.Subscribe("updates", func(s *stock) {
 		log.Printf("Stock: %s - Price: %v", s.Symbol, s.Price)
-		wg.Done()
 	}); err != nil {
 		log.Fatal(err)
 	}
 
 	// Wait for a message to come in
-	wg.Wait()
+	// wg.Done()
+	// wg.Wait()
 
 	// [end subscribe_json]
+	select {}
 }
